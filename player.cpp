@@ -1,4 +1,5 @@
 #include "player.h"
+#include <vector>
 
 // Ăn quân cờ đối phương
 void player::kill(piece was_kill){

@@ -1,7 +1,8 @@
 #include "board.h"
+#include "raylib/src/raylib.h"
 
 // Constructor cho class cell
-cell::cell(XY pos, int16_t type, size frame_size=FRAME_SIZE, int padding=PADDING) {
+cell::cell(XY pos, int16_t type, size frame_size=FRAME_SIZE, int padding) {
     this->Piece = init_piece(type);
     this->pos = pos;                // Vị trí ô (ví dụ {0,1}, {0,2}..., {0,8})
     
@@ -27,7 +28,8 @@ void cell::draw_cell() {
         color = ODD_CELL_COLOR;
     } else color = EVEN_CELL_COLOR;
     DrawRectangleRec(this->rec, color);
-    // Draw Piece
+    if (this->Piece.get_type() == 0) return;
+    draw_picture(this->Piece.get_texture(), this->get_rect());
 }
 
 // ------- Modify thêm ---------
@@ -67,16 +69,16 @@ board::board(std::string white_player, std::string black_player) {
     }
     
     // Quân tượng
-    board_game[0][1] = cell({0,1}, -2);
-    board_game[0][6] = cell({0,6}, -2);
-    board_game[7][1] = cell({6,0}, 2);
-    board_game[7][6] = cell({7,6}, 2);
+    board_game[0][1] = cell({0,2}, -2);
+    board_game[0][6] = cell({0,5}, -2);
+    board_game[7][1] = cell({7,2}, 2);
+    board_game[7][6] = cell({7,5}, 2);
     
     // Quân mã
-    board_game[0][2] = cell({0,2}, -3);
-    board_game[0][5] = cell({0,5}, -3);
-    board_game[7][2] = cell({7,2}, 3);
-    board_game[7][5] = cell({7,5}, 3);
+    board_game[0][2] = cell({0,1}, -3);
+    board_game[0][5] = cell({0,6}, -3);
+    board_game[7][2] = cell({7,1}, 3);
+    board_game[7][5] = cell({7,6}, 3);
     
     // Quân xe
     board_game[0][0] = cell({0,0}, -4);
@@ -96,7 +98,7 @@ board::board(std::string white_player, std::string black_player) {
 void board::draw_board() {
     for(int i = 0; i < 8; i++) {
         for(int j = 0; j < 8; j++) {
-            board_game[i][j].draw_cell();
+            this->board_game[i][j].draw_cell();
         }
     }
 }
