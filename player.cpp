@@ -2,11 +2,11 @@
 #include <vector>
 
 // Ăn quân cờ đối phương
-void player::kill(piece was_kill){
-    this->piece_killed.push_back(was_kill);
+void player::capture(piece was_kill){
+    this->piece_captured.push_back(was_kill);
 }
 
 // Lấy số quân cờ đã ăn
-std::vector<piece> player::get_piece_kill(){
-    return this->piece_killed;
+std::vector<piece> player::get_piece_captured(){
+    return this->piece_captured;
 }

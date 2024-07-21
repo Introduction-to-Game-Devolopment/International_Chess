@@ -64,35 +64,35 @@ board::board(std::string white_player, std::string black_player) {
     
     //Quân tốt
     for (int j = 0; j < 8; j++) {
-        board_game[1][j] = cell({1,j}, -1);
-        board_game[6][j] = cell({6,j}, 1);
+        this->board_game[1][j] = cell({1,j}, -1);
+        this->board_game[6][j] = cell({6,j}, 1);
     }
     
     // Quân tượng
-    board_game[0][1] = cell({0,2}, -2);
-    board_game[0][6] = cell({0,5}, -2);
-    board_game[7][1] = cell({7,2}, 2);
-    board_game[7][6] = cell({7,5}, 2);
+    this->board_game[0][1] = cell({0,2}, -2);
+    this->board_game[0][6] = cell({0,5}, -2);
+    this->board_game[7][1] = cell({7,2}, 2);
+    this->board_game[7][6] = cell({7,5}, 2);
     
     // Quân mã
-    board_game[0][2] = cell({0,1}, -3);
-    board_game[0][5] = cell({0,6}, -3);
-    board_game[7][2] = cell({7,1}, 3);
-    board_game[7][5] = cell({7,6}, 3);
+    this->board_game[0][2] = cell({0,1}, -3);
+    this->board_game[0][5] = cell({0,6}, -3);
+    this->board_game[7][2] = cell({7,1}, 3);
+    this->board_game[7][5] = cell({7,6}, 3);
     
     // Quân xe
-    board_game[0][0] = cell({0,0}, -4);
-    board_game[0][7] = cell({0,7}, -4);
-    board_game[7][0] = cell({7,0}, 4);
-    board_game[7][7] = cell({7,7}, 4);
+    this->board_game[0][0] = cell({0,0}, -4);
+    this->board_game[0][7] = cell({0,7}, -4);
+    this->board_game[7][0] = cell({7,0}, 4);
+    this->board_game[7][7] = cell({7,7}, 4);
     
     // Quân hậu
-    board_game[0][3] = cell({0,3}, -5);
-    board_game[7][3] = cell({7,3}, 5);
+    this->board_game[0][3] = cell({0,3}, -5);
+    this->board_game[7][3] = cell({7,3}, 5);
     
     // Quân Vua
-    board_game[0][4] = cell({0,4}, -6);
-    board_game[7][4] = cell({7,4}, 6);
+    this->board_game[0][4] = cell({0,4}, -6);
+    this->board_game[7][4] = cell({7,4}, 6);
 }
 
 void board::draw_board() {
