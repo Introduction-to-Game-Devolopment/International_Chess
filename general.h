@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <string>
 #include <string.h>
-#include "raylib/src/raylib.h"
+#include "raylib.h"
 
 typedef struct {
     int x;
@@ -25,5 +25,5 @@ const Color EVEN_CELL_COLOR = {217, 217, 217, 255};
 const Color CHOSEN_CELL_COLOR = {165, 111, 111, 255};
 const Color HOVERED_CELL_COLOR = {165, 111, 111, 125};
 
-const size FRAME_SIZE = {1650, 980};
+const size FRAME_SIZE = {2000, 1500};
 const int PADDING = 40;

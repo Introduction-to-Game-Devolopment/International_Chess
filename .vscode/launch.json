@@ -13,7 +13,7 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": false,
+            "externalConsole": true,
             "MIMode": "gdb",
             "setupCommands": [
               {
@@ -25,12 +25,6 @@
             "windows": {
               "miDebuggerPath": "C:/raylib/w64devkit/bin/gdb.exe",
             },
-            "osx": {
-              "MIMode": "lldb"
-            },
-            "linux": {
-              "miDebuggerPath": "/usr/bin/gdb",
-            },
             "preLaunchTask": "build debug"
           },
           {
@@ -41,18 +35,12 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": false,
+            "externalConsole": true,
             "program": "${workspaceFolder}/${fileBasenameNoExtension}",
             "MIMode": "gdb",
             "windows": {
               "program": "${workspaceFolder}/${fileBasenameNoExtension}.exe",
               "miDebuggerPath": "C:/raylib/w64devkit/bin/gdb.exe"
-            },
-            "osx": {
-              "MIMode": "lldb"
-            },
-            "linux": {
-              "miDebuggerPath": "/usr/bin/gdb"
             },
             "preLaunchTask": "build release",
           }

@@ -10,7 +10,7 @@ class cell {
         bool is_hover;
         int length;     //Size
     public:
-        cell(): Piece(0,0), pos({0,0}), rec({0,0,0,0}), is_chosen(0), is_hover(0), length(0) {}
+        cell(): Piece(), pos({0,0}), rec({0,0,0,0}), is_chosen(0), is_hover(0), length(0) {}
         cell(XY, int16_t, size frame_size, int padding);
         int16_t get_type_piece() { return this->Piece.get_type();}
         Rectangle get_rect() { return this->rec;}

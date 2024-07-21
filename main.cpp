@@ -1,13 +1,11 @@
 #include "board.h"
 
-int main(void)
-{
+int main(void) {
     InitWindow(FRAME_SIZE.w, FRAME_SIZE.h, "raylib [core] example - basic window");
 
     SetTargetFPS(60);
     board Board = board();
-    while (!WindowShouldClose())
-    {
+    while (!WindowShouldClose()) {
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
