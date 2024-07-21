@@ -1,5 +1,7 @@
+#include "general.h"
 #include "board.h"
-#include "raylib/src/raylib.h"
+#include "piece.h"
+#include "player.h"
 
 int main(void)
 {   
@@ -17,6 +19,7 @@ int main(void)
         EndDrawing();
     }
 
+    destroy_piece_texture();
     CloseWindow();
 
     return 0;

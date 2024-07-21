@@ -1,3 +1,6 @@
+#ifndef PLAYER_H
+#define PLAYER_H
+
 #include "piece.h"
 
 class player {
@@ -13,3 +16,5 @@ class player {
         std::vector<piece> get_piece_captured();
         
 };
+
+#endif

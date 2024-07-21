@@ -1,5 +1,5 @@
 #include "board.h"
-#include "raylib/src/raylib.h"
+#include "raylib.h"
 
 // Constructor cho class cell
 cell::cell(XY pos, int16_t type, size frame_size=FRAME_SIZE, int padding) {
@@ -35,7 +35,7 @@ void cell::draw_cell() {
 // ------- Modify thêm ---------
 void cell::hover(piece _piece) {
     int16_t type = _piece.get_type();
-    if (type*this->Piece.get_type() < 0 ||type == 0)
+    if (type*this->Piece.get_type() < 0 || type == 0)
         this->is_hover = true;
 }
 
@@ -55,7 +55,7 @@ void cell::unchoose() {
 board::board(std::string white_player, std::string black_player) {
     this->white_player = player(white_player, 1);
     this->black_player = player(black_player, -1);
-    this-> turn = 1;
+    this->turn = 1;
     for (int i = 2; i < 6; i++) {
         for (int j = 0; j < 8; j++) {
             this->board_game[i][j] = cell({i, j}, 0); 
@@ -102,7 +102,3 @@ void board::draw_board() {
         }
     }
 }
-
-
-
-

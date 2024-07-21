@@ -1,8 +1,21 @@
 #include "general.h"
-#include "raylib/src/raylib.h"
 
 bool operator==(const Vector2& lv, const Vector2& rv) {
     return (lv.x == rv.x) && (lv.y == rv.y);
+}
+
+XY operator+(const XY& u, const XY& v) {
+    return {u.x + v.x, u.y + v.y};
+}
+
+XY& operator+=(XY& u, const XY& v) {
+    u.x += v.x;
+    u.y += v.y;
+    return u;
+}
+
+XY operator*(const XY& u, const int& l) {
+    return {u.x * l, u.y * l};
 }
 
 void draw_picture(const char* file_path, Rectangle dest_rect, float rotation, Vector2 origin, Color color) {
