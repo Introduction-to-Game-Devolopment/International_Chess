@@ -1,11 +1,13 @@
 #include "board.h"
+#include "raylib.h"
 
 // Constructor cho class cell
-cell::cell(XY pos, int16_t type, size frame_size=FRAME_SIZE, int padding=PADDING) {
+cell::cell(XY pos, int16_t type, size frame_size=FRAME_SIZE, int padding) {
+    this->Piece = init_piece(type);
     this->pos = pos;                // Vị trí ô (ví dụ {0,1}, {0,2}..., {0,8})
     
     this->length = (frame_size.h - 2*padding)/8;
-    this->Piece = init_piece(type, this->length);
+    this->Piece = init_piece(type);
     point position = {padding + pos.x*length, padding + pos.y*length};
     
     this->rec.x = position.x;
@@ -27,23 +29,14 @@ void cell::draw_cell() {
         color = ODD_CELL_COLOR;
     } else color = EVEN_CELL_COLOR;
     DrawRectangleRec(this->rec, color);
-    
-    if (this->Piece.get_exist()) {
-        Image image = this->Piece.get_image();
-        if (IsImageReady(image)) {
-            Texture2D piece = LoadTextureFromImage(image);
-            //UnloadImage(image);
-            DrawTexture(piece, this->rec.x, this->rec.y, WHITE);
-            //UnloadTexture(piece);
-        }
-    }
-    // Draw Piece
+    if (this->Piece.get_type() == 0) return;
+    draw_picture(this->Piece.get_texture(), this->get_rect());
 }
 
 // ------- Modify thêm ---------
 void cell::hover(piece _piece) {
     int16_t type = _piece.get_type();
-    if (type*this->Piece.get_type() < 0 ||type == 0)
+    if (type*this->Piece.get_type() < 0 || type == 0)
         this->is_hover = true;
 }
 
@@ -77,16 +70,16 @@ board::board(std::string white_player, std::string black_player) {
     }
     
     // Quân tượng
-    this->board_game[0][2] = cell({0,2}, -2);
-    this->board_game[0][5] = cell({0,5}, -2);
-    this->board_game[7][2] = cell({7,2}, 2);
-    this->board_game[7][5] = cell({7,5}, 2);
+    this->board_game[0][1] = cell({0,2}, -2);
+    this->board_game[0][6] = cell({0,5}, -2);
+    this->board_game[7][1] = cell({7,2}, 2);
+    this->board_game[7][6] = cell({7,5}, 2);
     
     // Quân mã
-    this->board_game[0][1] = cell({0,1}, -3);
-    this->board_game[0][6] = cell({0,6}, -3);
-    this->board_game[7][1] = cell({7,1}, 3);
-    this->board_game[7][6] = cell({7,6}, 3);
+    this->board_game[0][2] = cell({0,1}, -3);
+    this->board_game[0][5] = cell({0,6}, -3);
+    this->board_game[7][2] = cell({7,1}, 3);
+    this->board_game[7][5] = cell({7,6}, 3);
     
     // Quân xe
     this->board_game[0][0] = cell({0,0}, -4);
@@ -97,7 +90,7 @@ board::board(std::string white_player, std::string black_player) {
     // Quân hậu
     this->board_game[0][3] = cell({0,3}, -5);
     this->board_game[7][3] = cell({7,3}, 5);
-
+    
     // Quân Vua
     this->board_game[0][4] = cell({0,4}, -6);
     this->board_game[7][4] = cell({7,4}, 6);
@@ -110,7 +103,3 @@ void board::draw_board() {
         }
     }
 }
-
-
-
-

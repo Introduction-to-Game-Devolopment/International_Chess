@@ -1,3 +1,6 @@
+#ifndef BOARD_H
+#define BOARD_H
+
 #include "player.h"
 
 // Class đại diện cho ô 
@@ -10,14 +13,14 @@ class cell {
         bool is_hover;
         int length;     //Size
     public:
-        cell(): Piece(), pos({0,0}), rec({0,0,0,0}), is_chosen(0), is_hover(0), length(0) {}
-        cell(XY, int16_t, size frame_size, int padding);
-        int16_t get_type_piece() { return this->Piece.get_type();}
-        Rectangle get_rect() { return this->rec;}
-        XY get_row_col() { return this->pos;}
-        int get_len() { return this->length;}
-        bool get_hover() { return this->is_hover;}
-        bool get_chosen() { return this->is_chosen;}
+        cell(): pos({0,0}), rec({0,0,0,0}), is_chosen(0), is_hover(0), length(0) {}
+        cell(XY, int16_t, size frame_size, int padding=PADDING);
+        int16_t get_type_piece() { return this->Piece.get_type(); }
+        Rectangle get_rect() { return this->rec; }
+        XY get_row_col() { return this->pos; }
+        int get_len() { return this->length; }
+        bool get_hover() { return this->is_hover; }
+        bool get_chosen() { return this->is_chosen; }
         
         void draw_cell();
         void hover(piece);
@@ -43,3 +46,5 @@ class board {
         void make_move();
         // ...
 };
+
+#endif

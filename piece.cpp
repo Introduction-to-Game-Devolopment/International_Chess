@@ -3,81 +3,105 @@
 piece init_piece(int16_t type, int length) {
     Image image;
     switch (type) {
-        case 1:
-            image = LoadImage("./pieces/white_pawn.png");
-            if (!IsImageReady(image)) return none();
+        case  1: return pawn(1, 1);
+        case  2: return bishop(1, 1);
+        case  3: return knight(1, 1);
+        case  4: return rook(1, 1);
+        case  5: return queen(1, 1);
+        case  6: return king(1, 1);
 
-            ImageResize(&image, length, length); 
-            return pawn(true, 1, image);
-        case 2:
-            image = LoadImage("./pieces/white_bishop.png");
-            if (!IsImageReady(image)) return none();
-
-            ImageResize(&image, length, length); 
-            return bishop(true, 1, image);
-        case 3:
-            image = LoadImage("./pieces/white_knight.png");
-            if (!IsImageReady(image)) return none();
-
-            ImageResize(&image, length, length); 
-            return knight(true, 1, image);
-        case 4:
-            image = LoadImage("./pieces/white_rook.png");
-            if (!IsImageReady(image)) return none();
-
-            ImageResize(&image, length, length); 
-            return rook(true, 1, image);
-        case 5:
-            image = LoadImage("./pieces/white_queen.png");
-            if (!IsImageReady(image)) return none();
-
-            ImageResize(&image, length, length); 
-            return queen(true, 1, image);
-        case 6:
-            image = LoadImage("./pieces/white_king.png");
-            if (!IsImageReady(image)) return none();
-
-            ImageResize(&image, length, length); 
-            return king(true, 1, image);
-
-        case -1:
-            image = LoadImage("./pieces/black_pawn.png");
-            if (!IsImageReady(image)) return none();
-
-            ImageResize(&image, length, length); 
-            return pawn(true, -1, image);
-        case -2:
-            image = LoadImage("./pieces/black_bishop.png");
-            if (!IsImageReady(image)) return none();
-
-            ImageResize(&image, length, length);     
-            return bishop(true, -1, image);
-        case -3:
-            image = LoadImage("./pieces/black_knight.png");
-            if (!IsImageReady(image)) return none();
-
-            ImageResize(&image, length, length); 
-            return knight(true, -1, image);
-        case -4:
-            image = LoadImage("./pieces/black_rook.png");
-            if (!IsImageReady(image)) return none();
-
-            ImageResize(&image, length, length); 
-            return rook(true, -1, image);
-        case -5:
-            image = LoadImage("./pieces/black_queen.png");
-            if (!IsImageReady(image)) return none();
-            
-            ImageResize(&image, length, length); 
-            return queen(true, -1, image);
-        case -6:
-            image = LoadImage("./pieces/black_king.png");
-            if (!IsImageReady(image)) return none();
-
-            ImageResize(&image, length, length); 
-            return king(true, -1, image);
-            
-        default:
-            return none();
+        case -1: return pawn(1, -1);
+        case -2: return bishop(1, -1);
+        case -3: return knight(1, -1);
+        case -4: return rook(1, -1);
+        case -5: return queen(1, -1);
+        case -6: return king(1, -1);
     }
+    return none();
+}
+
+std::vector<XY> pawn::get_move(XY pos) {
+    int dir = this->get_type() > 0 ? 1 : -1;
+    std::vector<XY> next_move(0);
+    XY new_pos;
+    for (int i = 0; i < 3; ++i) {
+        new_pos = pos + PAWN_MOVE[i]*dir;
+        if (is_inside(new_pos)) {
+            next_move.emplace_back(new_pos);
+        }
+    }
+    if (!this->moved) {
+        new_pos = pos + PAWN_MOVE[1]*dir*2;
+        if (is_inside(new_pos))
+        next_move.emplace_back(new_pos);
+    }
+    return next_move;
+}
+
+std::vector<XY> bishop::get_move(XY pos) {
+    std::vector<XY> next_move(0);
+    XY new_pos;
+    for (int i = 0; i < 4; ++i) {
+        for (int l = 1; l <= 8; ++l) {
+            new_pos = pos + BISHOP_MOVE[i]*l;
+            if (!is_inside(new_pos)) break;
+            next_move.emplace_back(new_pos);
+        }
+    }
+    return next_move;
+}
+
+std::vector<XY> knight::get_move(XY pos) {
+    std::vector<XY> next_move(0);
+    XY new_pos;
+    for (int i = 0; i < 8; ++i) {
+        new_pos = pos + KNIGHT_MOVE[i];
+        if (is_inside(new_pos)) {
+            next_move.emplace_back(new_pos);
+        }
+    }
+    return next_move;
+}
+
+std::vector<XY> rook::get_move(XY pos) {
+    std::vector<XY> next_move(0);
+    XY new_pos;
+    for (int i = 0; i < 4; ++i) {
+        for (int l = 1; l <= 8; ++l) {
+            new_pos = pos + ROOK_MOVE[i]*l;
+            if (is_inside(new_pos)) {
+                next_move.emplace_back(new_pos);
+            }
+        }
+    }
+    return next_move;
+}
+
+std::vector<XY> queen::get_move(XY pos) {
+    std::vector<XY> next_move(0);
+    XY new_pos;
+    for (int i = 0; i < 8; ++i) {
+        for (int l = 1; l <= 8; ++l) {
+            new_pos = pos + QUEEN_MOVE[i]*l;
+            if (!is_inside(new_pos)) break;
+            next_move.emplace_back(new_pos);
+        }
+    }
+    return next_move;
+}
+
+std::vector<XY> king::get_move(XY pos) {
+    std::vector<XY> next_move(0);
+    XY new_pos;
+    for (int i = 0; i < 8; ++i) {
+        new_pos = pos + KING_MOVE[i];
+        if (is_inside(new_pos)) {
+            next_move.emplace_back(new_pos);
+        }
+    }
+    return next_move;
+}
+
+bool is_inside(XY pos) {
+    return 0 <= pos.x && pos.x < 8 && 0 <= pos.y && pos.y < 8;
 }

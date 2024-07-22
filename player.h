@@ -1,3 +1,6 @@
+#ifndef PLAYER_H
+#define PLAYER_H
+
 #include "piece.h"
 
 class player {
@@ -9,7 +12,9 @@ class player {
     public:
         player(): name("Anonymous"), type(1) {}
         player(std::string name, int8_t type): name(name), type(type) {}
-        void capture(piece captured);
+        void capture(piece was_captured);
         std::vector<piece> get_piece_captured();
         
 };
+
+#endif
