@@ -57,6 +57,7 @@ board::board(std::string white_player, std::string black_player) {
     this->white_player = player(white_player, 1);
     this->black_player = player(black_player, -1);
     this->turn = 1;
+    this->en_passant = {-1, -1};
     for (int i = 2; i < 6; i++) {
         for (int j = 0; j < 8; j++) {
             this->board_game[i][j] = cell({i, j}, 0); 
@@ -102,4 +103,161 @@ void board::draw_board() {
             this->board_game[i][j].draw_cell();
         }
     }
+}
+
+bool board::is_inside(XY pos) {
+    return pos.x <= 0 && pos.x < 8 && pos.y <= 0 && pos.y < 8;
+}
+
+bool board::is_blocked(XY pos) {
+    return this->board_game[pos.x][pos.y].is_exist_piece();
+}
+
+bool board::is_captured(XY pos) {
+    return this->turn * this->board_game[pos.x][pos.y].get_type_piece() < 0;
+}
+
+bool board::is_en_passant(XY pos) {
+    return !is_blocked(pos) && pos + PAWN_MOVE[this->turn > 0 ? 4 : 1] == this->en_passant;
+}
+
+bool board::is_promotion(XY pos) {
+    return pos.y == 0 || pos.y == 7;
+}
+
+std::vector<XY> board::get_move(cell square) {
+    if (!square.is_exist_piece()) return std::vector<XY>(0);
+
+    std::vector<XY> next_move(0);
+    XY pos = square.get_pos();
+    XY next_pos;
+    int dir;
+    switch (square.get_type_piece() * this->turn) {
+        case 1:
+        //promotion
+            dir = this->turn > 0 ? 1 : 4;
+            next_pos = pos + PAWN_MOVE[dir];
+            if (is_inside(next_pos) && !is_blocked(next_pos)) {
+                next_move.emplace_back(next_pos);
+                /*
+                if (is_promotion(next_pos) {}
+                */
+                if (!square.is_moved_piece() && is_inside(next_pos += PAWN_MOVE[dir]) && !is_blocked(next_pos)) {
+                    next_move.emplace_back(next_pos);
+                }
+            }
+            for (int capture_dir : {dir - 1, dir + 1}) {
+                next_pos = pos + PAWN_MOVE[capture_dir];
+                if (is_inside(next_pos)) {
+                    if (is_captured(next_pos)) {
+                        next_move.emplace_back(next_pos);
+                    }
+                    if (is_en_passant(next_pos)) {
+                        next_move.emplace_back(next_pos);
+                    }
+                }
+            }
+            break;
+        case 2:
+            for (int dir = 0; dir < 4; ++dir) {
+                next_pos = pos;
+                while (is_inside(next_pos += BISHOP_MOVE[dir])) {
+                    if (is_blocked(next_pos)) {
+                        if (is_captured(next_pos)) {
+                            next_move.emplace_back(next_pos);
+                        }
+                        break;
+                    }
+                    else {
+                        next_move.emplace_back(next_pos);
+                    }
+                }
+            }
+            break;
+        case 3:
+            for (int dir = 0; dir < 8; ++dir) {
+                next_pos = pos + KNIGHT_MOVE[dir];
+                if (is_inside(next_pos)) {
+                    next_move.emplace_back(next_pos);
+                }
+            }
+            break;
+        case 4:
+        //unable to castle if moved
+            for (int dir = 0; dir < 4; ++dir) {
+                next_pos = pos;
+                while (is_inside(next_pos += ROOK_MOVE[dir])) {
+                    if (is_blocked(next_pos)) {
+                            if (is_captured(next_pos)) {
+                                next_move.emplace_back(next_pos);
+                        }
+                        break;
+                    }
+                    else {
+                        next_move.emplace_back(next_pos);
+                    }
+                }
+            }
+            break;
+        case 5:
+            for (int dir = 0; dir < 8; ++dir) {
+                next_pos = pos;
+                while (is_inside(next_pos += QUEEN_MOVE[dir])) {
+                    if (is_blocked(next_pos)) {
+                        if (is_captured(next_pos)) {
+                            next_move.emplace_back(next_pos);
+                        }
+                        break;
+                    }
+                    else {
+                        next_move.emplace_back(next_pos);
+                    }
+                }
+            }
+            break;
+        case 6:
+        //king capture king
+        //king capture protected pieces
+        //no castling while being checked
+        //no move to captured place
+        //no castle when moved
+            for (int dir = 0; dir < 8; ++dir) {
+                next_pos = pos + KING_MOVE[dir];
+                if (is_inside(next_pos)) {
+                    if (is_blocked(next_pos)) {
+                        //if (is_opponent_king())
+                        //if (is_protected())
+                        if (is_captured(next_pos)) {
+                            next_move.emplace_back(next_pos);
+                        }
+                    }
+                    else {
+                        //if (is_check());
+                        next_move.emplace_back(next_pos);
+                    }
+                }
+            }
+            //when move a piece, set was_move to {true}
+            if (!square.is_moved_piece()) {
+                for (int dir : {0, 4}) {
+                    bool castle = true;
+                    next_pos = pos;
+                    for (int step = 1; step <= 3; ++step) castle &= !is_blocked(next_pos += KING_MOVE[dir]);
+                    if (!castle) continue;
+
+                    for (XY rook_pos = next_pos + KING_MOVE[dir]; is_inside(rook_pos); rook_pos += KING_MOVE[dir]) {
+                        if (is_blocked(rook_pos)) {
+                            cell& rook_square = this->board_game[rook_pos.x][rook_pos.y];
+                            if (!rook_square.is_moved_piece() && rook_square.get_type_piece() * this->turn == 4) {
+                                next_move.emplace_back(next_pos);
+                            }
+                            //chose king and rook to castle
+                            break;
+                        }
+                    }
+                }
+            }
+            break;
+    }
+    return next_move;
 }

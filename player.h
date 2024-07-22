@@ -12,8 +12,8 @@ class player {
     public:
         player(): name("Anonymous"), type(1) {}
         player(std::string name, int8_t type): name(name), type(type) {}
-        void capture(piece was_captured);
-        std::vector<piece> get_piece_captured();
+        void capture(piece);
+        std::vector<piece> get_piece_captured(void);
         
 };
 

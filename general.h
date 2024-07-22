@@ -20,13 +20,15 @@ typedef struct {
 } XY;
 
 typedef struct {
-    int w, h;
+    int w;
+    int h;
 } size;
 
-bool operator==(const Vector2& lv, const Vector2& rv);
-XY operator+(const XY& u, const XY& v);
-XY& operator+=(XY& u, const XY& v);
-XY operator*(const XY& u, const int& l);
+bool operator==(const Vector2&, const Vector2&);
+bool operator==(const XY&, const XY&);
+XY operator+(const XY&, const XY&);
+XY& operator+=(XY&, const XY&);
+XY operator*(const XY&, const int&);
 
 const Color     ODD_CELL_COLOR = { 211, 176, 131, 255 };
 const Color    EVEN_CELL_COLOR = { 217, 217, 217, 255 };
@@ -36,12 +38,12 @@ const Color HOVERED_CELL_COLOR = { 165, 111, 111, 125 };
 const size FRAME_SIZE = { 1650, 980 };
 const int PADDING = 40;
 
-const XY   PAWN_MOVE[] = { {-1, 1}, { 0, 1}, {1,  1}                                                 };
-const XY BISHOP_MOVE[] = { {-1, 1}, { 1, 1}, {1, -1}, {-1, -1}                                       };
-const XY KNIGHT_MOVE[] = { {-2, 1}, {-1, 2}, {1,  2}, { 2,  1}, {2, -1}, {1, -2}, {-1, -2}, {-2, -1} };
-const XY   ROOK_MOVE[] = { {-1, 0}, { 0, 1}, {1,  0}, {-1,  0}                                       };
-const XY  QUEEN_MOVE[] = { {-1, 0}, {-1, 1}, {0,  1}, { 1,  1}, {1,  0}, {1, -1}, {-1,  0}, {-1, -1} };
-const XY   KING_MOVE[] = { {-1, 0}, {-1, 1}, {0,  1}, { 1,  1}, {1,  0}, {1, -1}, {-1,  0}, {-1, -1} };
+const XY   PAWN_MOVE[] = { {-1, 1}, { 0, 1}, {1,  1}, { 1, -1}, {0, -1}, {-1, -1}                     };
+const XY BISHOP_MOVE[] = { {-1, 1}, { 1, 1}, {1, -1}, {-1, -1}                                        };
+const XY KNIGHT_MOVE[] = { {-2, 1}, {-1, 2}, {1,  2}, { 2,  1}, {2, -1}, { 1, -2}, {-1, -2}, {-2, -1} };
+const XY   ROOK_MOVE[] = { {-1, 0}, { 0, 1}, {1,  0}, { 0, -1}                                        };
+const XY  QUEEN_MOVE[] = { {-1, 0}, {-1, 1}, {0,  1}, { 1,  1}, {1,  0}, { 1, -1}, { 0, -1}, {-1, -1} };
+const XY   KING_MOVE[] = { {-1, 0}, {-1, 1}, {0,  1}, { 1,  1}, {1,  0}, { 1, -1}, { 0, -1}, {-1, -1} };
 
 extern Texture2D BLACK_PAWN;
 extern Texture2D BLACK_BISHOP;
@@ -57,8 +59,8 @@ extern Texture2D WHITE_ROOK;
 extern Texture2D WHITE_QUEEN;
 extern Texture2D WHITE_KING;
 
-void init_piece_texture();
-void destroy_piece_texture();
+void init_piece_texture(void);
+void destroy_piece_texture(void);
 
 const Vector2 ORIGIN = { 0.0f, 0.0f };
 

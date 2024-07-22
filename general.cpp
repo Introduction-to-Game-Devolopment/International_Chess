@@ -4,6 +4,10 @@ bool operator==(const Vector2& lv, const Vector2& rv) {
     return (lv.x == rv.x) && (lv.y == rv.y);
 }
 
+bool operator==(const XY& p, const XY& q) {
+    return p.x == q.x && p.y == q.y;
+}
+
 XY operator+(const XY& u, const XY& v) {
     return {u.x + v.x, u.y + v.y};
 }
@@ -14,8 +18,8 @@ XY& operator+=(XY& u, const XY& v) {
     return u;
 }
 
-XY operator*(const XY& u, const int& l) {
-    return {u.x * l, u.y * l};
+XY operator*(const XY& u, const int& d) {
+    return {u.x * d, u.y * d};
 }
 
 void draw_picture(const char* file_path, Rectangle dest_rect, float rotation, Vector2 origin, Color color) {
@@ -46,7 +50,7 @@ Texture2D WHITE_ROOK;
 Texture2D WHITE_QUEEN;
 Texture2D WHITE_KING;
 
-void init_piece_texture() {
+void init_piece_texture(void) {
     BLACK_PAWN = LoadTexture("asset/black_pawn.png");
     BLACK_BISHOP = LoadTexture("asset/black_bishop.png");
     BLACK_KNIGHT = LoadTexture("asset/black_knight.png");
@@ -62,7 +66,7 @@ void init_piece_texture() {
     WHITE_KING = LoadTexture("asset/white_king.png");
 }
 
-void destroy_piece_texture() {
+void destroy_piece_texture(void) {
     UnloadTexture(BLACK_BISHOP);
     UnloadTexture(BLACK_PAWN);
     UnloadTexture(BLACK_KNIGHT);
