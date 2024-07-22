@@ -1,7 +1,6 @@
 #include "piece.h"
 
-piece init_piece(int16_t type, int length) {
-    Image image;
+piece init_piece(int16_t type) {
     switch (type) {
         case  1: return pawn(1, 1);
         case  2: return bishop(1, 1);
