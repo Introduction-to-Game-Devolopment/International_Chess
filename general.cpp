@@ -9,7 +9,11 @@ bool operator==(const XY& p, const XY& q) {
 }
 
 XY operator+(const XY& u, const XY& v) {
-    return {u.x + v.x, u.y + v.y};
+    return { u.y + v.y, u.x + v.x};
+}
+
+XY operator-(const XY& u, const XY& v) {
+    return { u.y - v.y, u.x - v.x};
 }
 
 XY& operator+=(XY& u, const XY& v) {
@@ -18,8 +22,26 @@ XY& operator+=(XY& u, const XY& v) {
     return u;
 }
 
+XY& operator-=(XY& u, const XY& v) {
+    u.x -= v.x;
+    u.y -= v.y;
+    return u;
+}
+
 XY operator*(const XY& u, const int& d) {
-    return {u.x * d, u.y * d};
+    return {u.y * d, u.x * d};
+}
+
+bool operator<(Vector2 point, Rectangle rec) {
+    if (point.x < (rec.x + rec.width) && point.x > rec.x && point.y < (rec.y + rec.height) && point.y > rec.y) return 1;
+    return 0;
+}
+
+template <class T>
+void swap(T &a, T &b) {
+    T tmp = a;
+    a = b;
+    b = tmp;
 }
 
 void draw_picture(const char* file_path, Rectangle dest_rect, float rotation, Vector2 origin, Color color) {
@@ -81,3 +103,14 @@ void destroy_piece_texture(void) {
     UnloadTexture(WHITE_QUEEN);
     UnloadTexture(WHITE_KING);
 }
+
+
+bool is_inside(XY pos) {
+    return pos.x >= 0 && pos.x < 8 && pos.y >= 0 && pos.y < 8;
+}
+
+bool is_promotion(XY pos) {
+    return pos.y == 0 || pos.y == 7;
+}
+// for debug
+// printf("PASS! %d\n", is_blocked(next_pos));    //  -------------------------------------------------------------

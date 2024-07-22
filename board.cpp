@@ -1,20 +1,23 @@
 #include "board.h"
-#include "raylib.h"
+#include "general.h"
+#include "piece.h"
+#include <vector>
+
 
 // Constructor cho class cell
 cell::cell(XY pos, int16_t type, size frame_size=FRAME_SIZE, int padding) {
     this->Piece = init_piece(type);
     this->pos = pos;                // Vị trí ô (ví dụ {0,1}, {0,2}..., {0,8})
-    
+
     this->length = (frame_size.h - 2*padding)/8;
     this->Piece = init_piece(type);
     point position = {padding + pos.x*length, padding + pos.y*length};
-    
+
     this->rec.x = position.x;
     this->rec.y = position.y;
     this->rec.height = this->length;
     this->rec.width = this->length;
-    
+
     this->is_hover = false;
     this->is_chosen = false;
 }
@@ -29,24 +32,28 @@ void cell::draw_cell() {
         color = ODD_CELL_COLOR;
     } else color = EVEN_CELL_COLOR;
     DrawRectangleRec(this->rec, color);
-    if (this->Piece.get_type() == 0) return;
+    if (this->Piece.get_type() == 0 || this->Piece.get_is_exist() == 0) return;
     draw_picture(this->Piece.get_texture(), this->get_rect());
 }
 
 // ------- Modify thêm ---------
-void cell::hover(piece _piece) {
-    int16_t type = _piece.get_type();
-    if (type*this->Piece.get_type() < 0 || type == 0)
-        this->is_hover = true;
+void cell::change_piece(piece Piece) {
+    this->Piece = Piece;
+}
+void cell::hover() {
+    this->is_hover = true;
 }
 
 void cell::unhover() {
     this->is_hover = false;
 }
 
-void cell::choose(int8_t turn) {
-    if (turn*this->Piece.get_type() > 0)
+void cell::choose(int8_t turn, Vector2 mouse_pos) {
+    if (mouse_pos < this->get_rect() && turn*this->Piece.get_type() > 0){
         this->is_chosen = true;
+        return;
+    }
+    this->is_chosen = false;
 }
 
 void cell::unchoose() {
@@ -60,7 +67,7 @@ board::board(std::string white_player, std::string black_player) {
     this->en_passant = {-1, -1};
     for (int i = 2; i < 6; i++) {
         for (int j = 0; j < 8; j++) {
-            this->board_game[i][j] = cell({i, j}, 0); 
+            this->board_game[i][j] = cell({i, j}, 0);
         }
     }
 
@@ -69,29 +76,29 @@ board::board(std::string white_player, std::string black_player) {
         this->board_game[1][j] = cell({1,j}, -1);
         this->board_game[6][j] = cell({6,j}, 1);
     }
-    
+
     // Quân tượng
-    this->board_game[0][1] = cell({0,2}, -2);
-    this->board_game[0][6] = cell({0,5}, -2);
-    this->board_game[7][1] = cell({7,2}, 2);
-    this->board_game[7][6] = cell({7,5}, 2);
-    
+    this->board_game[0][2] = cell({0,2}, -2);
+    this->board_game[0][5] = cell({0,5}, -2);
+    this->board_game[7][2] = cell({7,2}, 2);
+    this->board_game[7][5] = cell({7,5}, 2);
+
     // Quân mã
-    this->board_game[0][2] = cell({0,1}, -3);
-    this->board_game[0][5] = cell({0,6}, -3);
-    this->board_game[7][2] = cell({7,1}, 3);
-    this->board_game[7][5] = cell({7,6}, 3);
-    
+    this->board_game[0][1] = cell({0,1}, -3);
+    this->board_game[0][6] = cell({0,6}, -3);
+    this->board_game[7][1] = cell({7,1}, 3);
+    this->board_game[7][6] = cell({7,6}, 3);
+
     // Quân xe
     this->board_game[0][0] = cell({0,0}, -4);
     this->board_game[0][7] = cell({0,7}, -4);
     this->board_game[7][0] = cell({7,0}, 4);
     this->board_game[7][7] = cell({7,7}, 4);
-    
+
     // Quân hậu
     this->board_game[0][3] = cell({0,3}, -5);
     this->board_game[7][3] = cell({7,3}, 5);
-    
+
     // Quân Vua
     this->board_game[0][4] = cell({0,4}, -6);
     this->board_game[7][4] = cell({7,4}, 6);
@@ -105,24 +112,16 @@ void board::draw_board() {
     }
 }
 
-bool board::is_inside(XY pos) {
-    return pos.x <= 0 && pos.x < 8 && pos.y <= 0 && pos.y < 8;
-}
-
 bool board::is_blocked(XY pos) {
-    return this->board_game[pos.x][pos.y].is_exist_piece();
+    return this->board_game[pos.y][pos.x].is_exist_piece();
 }
 
 bool board::is_captured(XY pos) {
-    return this->turn * this->board_game[pos.x][pos.y].get_type_piece() < 0;
+    return this->turn * this->board_game[pos.y][pos.x].get_type_piece() < 0;
 }
 
 bool board::is_en_passant(XY pos) {
     return !is_blocked(pos) && pos + PAWN_MOVE[this->turn > 0 ? 4 : 1] == this->en_passant;
-}
-
-bool board::is_promotion(XY pos) {
-    return pos.y == 0 || pos.y == 7;
 }
 
 std::vector<XY> board::get_move(cell square) {
@@ -136,18 +135,18 @@ std::vector<XY> board::get_move(cell square) {
         case 1:
         //promotion
             dir = this->turn > 0 ? 1 : 4;
-            next_pos = pos + PAWN_MOVE[dir];
+            next_pos = pos - PAWN_MOVE[dir];
             if (is_inside(next_pos) && !is_blocked(next_pos)) {
                 next_move.emplace_back(next_pos);
                 /*
                 if (is_promotion(next_pos) {}
                 */
-                if (!square.is_moved_piece() && is_inside(next_pos += PAWN_MOVE[dir]) && !is_blocked(next_pos)) {
+                if (!square.is_moved_piece() && is_inside(next_pos -= PAWN_MOVE[dir]) && !is_blocked(next_pos)) {
                     next_move.emplace_back(next_pos);
                 }
             }
             for (int capture_dir : {dir - 1, dir + 1}) {
-                next_pos = pos + PAWN_MOVE[capture_dir];
+                next_pos = pos - PAWN_MOVE[capture_dir];
                 if (is_inside(next_pos)) {
                     if (is_captured(next_pos)) {
                         next_move.emplace_back(next_pos);
@@ -260,4 +259,58 @@ std::vector<XY> board::get_move(cell square) {
             break;
     }
     return next_move;
+}
+
+void board::wait_for_event(Vector2 mouse_pos) {
+    std::vector<XY> next_move;
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            this->board_game[i][j].choose(this->turn, mouse_pos);
+            this->board_game[i][j].unhover();
+            if (this->board_game[i][j].get_chosen()) {
+                next_move = this->get_move(this->board_game[i][j]);
+                    if (next_move.empty())
+                    printf("chosen %d" , int(this->board_game[i][j].get_chosen()));
+            }
+        }
+    }
+
+    for (std::vector<XY>::size_type i = 0; i < next_move.size(); i++) {
+        int X = next_move[i].x, Y = next_move[i].y;
+        this->board_game[Y][X].hover();
+    }
+}
+
+void board::swap_cell(cell &cell1, cell &cell2) {
+    piece tmp = cell1.get_piece();
+    cell1.change_piece(cell2.get_piece());
+    cell2.change_piece(tmp);
+    printf("PASS\n");
+}
+bool board::make_move(Vector2 mouse_pos) {
+    XY hovered_pos = {-1, -1}, chosen_pos = {-1, -1};
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            if (mouse_pos < this->board_game[i][j].get_rect()) {
+                if (this->board_game[i][j].get_hover()) {
+                    hovered_pos = {i, j};
+                }
+            }
+            if (this->board_game[i][j].get_chosen()) {
+                chosen_pos = {i, j};
+            }
+            this->board_game[i][j].unchoose();
+            this->board_game[i][j].unhover();
+        }
+    }
+
+    printf("%d - %d | %d - %d\n", hovered_pos.y, hovered_pos.x, chosen_pos.y, chosen_pos.x);      //--------------------------------------
+    
+    if (!(hovered_pos == default_pos && chosen_pos == default_pos)) {
+        swap_cell(this->board_game[hovered_pos.y][hovered_pos.x], this->board_game[chosen_pos.y][chosen_pos.x]);
+        this->turn = -this->turn;
+        return 1;
+    }
+    return 0;
+
 }

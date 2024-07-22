@@ -14,6 +14,14 @@ int main(void)
         BeginDrawing();
         ClearBackground(RAYWHITE);
         Board.draw_board();
+        
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        {
+            Vector2 mouse_pos = GetMousePosition();
+            bool flag = Board.make_move(mouse_pos);
+            if (!flag) Board.wait_for_event(mouse_pos);
+            printf("Mouse left button pressed at [%f, %f]\n", mouse_pos.x, mouse_pos.y);
+        }
 
         EndDrawing();
     }
