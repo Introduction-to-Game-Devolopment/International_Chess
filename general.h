@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include "../raylib/src/raylib.h"
+// #include "raylib.h"
 
 typedef struct {
     int x;
@@ -19,7 +20,7 @@ typedef struct {
     int x;
 } XY;
 
-const XY default_pos = {-1, -1};
+const XY DEFAULT_POS = {-1, -1};
 
 typedef struct {
     int w;

@@ -18,3 +18,16 @@ piece init_piece(int16_t type) {
     }
     return none();
 }
+
+void piece::exist() {
+    this->is_exist = true;
+}
+
+void piece::unexist() {
+    this->is_exist = false;
+}
+
+void piece::moved() {
+    this->was_moved = true;
+}
+

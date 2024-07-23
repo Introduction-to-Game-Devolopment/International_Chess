@@ -14,7 +14,10 @@ class piece {
         piece(bool is_exist, int16_t type, Texture2D texture): is_exist(is_exist), type(type), texture(texture), was_moved(false) {}
         int16_t get_type(void) { return this->type; }
         Texture2D get_texture(void) { return this->texture; }
-        void change_exist();
+        void exist();
+        void unexist();
+        void change_exist() {return this->is_exist?this->unexist():this->exist();}
+        void moved();
 
         virtual ~piece() = default; // Destructor ảo để lớp dẫn xuất có thể dọn dẹp tài nguyên nếu 
         

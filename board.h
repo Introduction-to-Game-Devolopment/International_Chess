@@ -18,6 +18,9 @@ class cell {
     public:
         cell(): pos({0,0}), rec({0,0,0,0}), is_chosen(0), is_hover(0), length(0) {}
         cell(XY, int16_t, size frame_size, int padding=PADDING);
+        void exist() {return this->Piece.exist();}
+        void unexist() {return this->Piece.unexist();}
+        void change_exist() {return this->Piece.change_exist();}
         void change_piece(piece);
         piece get_piece() {return this->Piece; }
         int16_t get_type_piece(void) { return this->Piece.get_type(); }
@@ -28,7 +31,7 @@ class cell {
         bool is_moved_piece(void) { return this->Piece.get_was_moved(); }
         bool get_hover(void) { return this->is_hover; }
         bool get_chosen(void) { return this->is_chosen; }
-        
+        void moved() { return this->Piece.moved(); }
         void draw_cell();
         void hover(void);
         void unhover(void);
@@ -50,15 +53,15 @@ class board {
         void draw_board(void);
         int8_t is_end_match();
         void wait_for_event(Vector2);
-        void swap_cell(cell&, cell&);
+        bool swap_cell(cell&, cell&);
+        bool swap_test(cell&, cell&, bool undo=false);
         bool make_move(Vector2);
 
         bool is_blocked(XY);
         bool is_captured(XY);
         bool is_en_passant(XY);
-        bool is_promotion(XY);
         bool is_in_check();
-        bool is_valid_move(XY, XY, int);
+        bool is_valid_move(XY, XY, int16_t);
         std::vector<XY> get_move(cell);
         // ...
 };
