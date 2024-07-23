@@ -58,6 +58,34 @@ void draw_picture(Texture2D texture, Rectangle dest_rect, float rotation, Vector
     DrawTexturePro(texture, src_rect, dest_rect, origin, rotation, color);
 }
 
+void draw_rectangle_with_border(Rectangle rect, Color rect_color, int border_width, Color border_color, int border_radius) {
+    DrawRectangleRounded(rect, 1.0*border_radius/100, 64, rect_color); 
+    DrawRectangleRoundedLinesEx(rect, 1.0*border_radius/100, 64, border_width, border_color); 
+}
+
+void draw_rectangle_with_rounded(Rectangle rect, Color rect_color, int border_width, Color border_color, border radius) {
+    DrawRectangle(rect.x + radius.top_left , rect.y, rect.width - radius.top_left  - radius.top_right, radius.top_left , rect_color);
+    DrawRectangle(rect.x, rect.y + radius.top_left , radius.bottom_left, rect.height - radius.top_left  - radius.bottom_left, rect_color);
+    DrawRectangle(rect.x + radius.bottom_left, rect.y + rect.height - radius.bottom_right, rect.width - radius.bottom_left - radius.bottom_right, radius.bottom_right, rect_color);
+    DrawRectangle(rect.x + rect.width - radius.top_right, rect.y + radius.top_right , radius.top_right, rect.height - radius.top_right - radius.bottom_right, rect_color);
+    DrawRectangle(rect.x + radius.bottom_left, rect.y + radius.top_left , rect.width - radius.top_right, rect.height - radius.bottom_right - radius.top_left , rect_color);
+
+    DrawLineEx({rect.x + radius.top_left , rect.y + float(border_width)/2}, {rect.x + rect.width - radius.top_right, rect.y + float(border_width)/2}, border_width, border_color); 
+    DrawLineEx({rect.x + float(border_width)/2, rect.y + radius.top_left }, {rect.x + float(border_width)/2, rect.y + rect.height - radius.bottom_left}, border_width, border_color); 
+    DrawLineEx({rect.x + radius.bottom_left, rect.y + rect.height - float(border_width)/2}, {rect.x + rect.width - radius.bottom_right, rect.y + rect.height - float(border_width)/2}, border_width, border_color); 
+    DrawLineEx({rect.x + rect.width - float(border_width)/2, rect.y + radius.top_right}, {rect.x + rect.width - float(border_width)/2, rect.y + rect.height - radius.bottom_right}, border_width, border_color); 
+
+    DrawCircleSector({rect.x + radius.top_left , rect.y + radius.top_left }, radius.top_left  - border_width, 180.0f, 270.0f, 64, rect_color);
+    DrawCircleSector({rect.x + rect.width - radius.top_right, rect.y + radius.top_right}, radius.top_right - border_width, 270.0f, 360.0f, 64, rect_color);
+    DrawCircleSector({rect.x + rect.width - radius.bottom_right, rect.y + rect.height - radius.bottom_right}, radius.bottom_right - border_width, 0.0f, 90.0f, 64, rect_color);
+    DrawCircleSector({rect.x + radius.bottom_left, rect.y + rect.height - radius.bottom_left}, radius.bottom_left - border_width, 90.0f, 180.0f, 64, rect_color);
+    
+    DrawRing({rect.x + radius.top_left , rect.y + radius.top_left }, radius.top_left , radius.top_left  - border_width, 180.0f, 270.0f, 64, border_color);
+    DrawRing({rect.x + rect.width - radius.top_right, rect.y + radius.top_right}, radius.top_right, radius.top_right - border_width, 270.0f, 360.0f, 64, border_color);
+    DrawRing({rect.x + rect.width - radius.bottom_right, rect.y + rect.height - radius.bottom_right}, radius.bottom_right, radius.bottom_right - border_width, 0.0f, 90.0f, 64, border_color);
+    DrawRing({rect.x + radius.bottom_left, rect.y + rect.height - radius.bottom_left}, radius.bottom_left, radius.bottom_left - border_width, 90.0f, 180.0f, 64, border_color);
+}
+
 Texture2D BLACK_PAWN;
 Texture2D BLACK_BISHOP;
 Texture2D BLACK_KNIGHT;
@@ -73,12 +101,12 @@ Texture2D WHITE_QUEEN;
 Texture2D WHITE_KING;
 
 void init_piece_texture(void) {
-    BLACK_PAWN = LoadTexture("asset/black_pawn.png");
-    BLACK_BISHOP = LoadTexture("asset/black_bishop.png");
-    BLACK_KNIGHT = LoadTexture("asset/black_knight.png");
-    BLACK_ROOK = LoadTexture("asset/black_rook.png");
-    BLACK_QUEEN = LoadTexture("asset/black_queen.png");
-    BLACK_KING = LoadTexture("asset/black_king.png");
+    BLACK_PAWN = LoadTexture("asset/BLACK_pawn.png");
+    BLACK_BISHOP = LoadTexture("asset/BLACK_bishop.png");
+    BLACK_KNIGHT = LoadTexture("asset/BLACK_knight.png");
+    BLACK_ROOK = LoadTexture("asset/BLACK_rook.png");
+    BLACK_QUEEN = LoadTexture("asset/BLACK_queen.png");
+    BLACK_KING = LoadTexture("asset/BLACK_king.png");
 
     WHITE_PAWN = LoadTexture("asset/white_pawn.png");
     WHITE_BISHOP = LoadTexture("asset/white_bishop.png");
@@ -113,4 +141,4 @@ bool is_promotion(XY pos) {
     return pos.y == 0 || pos.y == 7;
 }
 // for debug
-// printf("PASS! %d\n", is_blocked(next_pos));    //  -------------------------------------------------------------
+// printf("PASS! %d\n", is_radius.bottom_leftocked(next_pos));    //  -------------------------------------------------------------
