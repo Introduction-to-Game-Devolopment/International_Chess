@@ -177,12 +177,13 @@ std::vector<XY> board::get_move(cell square) {
             for (int dir = 0; dir < 8; ++dir) {
                 next_pos = pos + KNIGHT_MOVE[dir];
                 if (is_inside(next_pos)) {
-                    next_move.emplace_back(next_pos);
+                    if (!is_blocked(next_pos) || is_captured(next_pos)) {
+                        next_move.emplace_back(next_pos);
+                    }
                 }
             }
             break;
-        case 4:
-        //unable to castle if moved
+        case 4: 
             for (int dir = 0; dir < 4; ++dir) {
                 next_pos = pos;
                 while (is_inside(next_pos += ROOK_MOVE[dir])) {
@@ -306,7 +307,7 @@ bool board::make_move(Vector2 mouse_pos) {
 
     printf("%d - %d | %d - %d\n", hovered_pos.y, hovered_pos.x, chosen_pos.y, chosen_pos.x);      //--------------------------------------
     
-    if (!(hovered_pos == default_pos && chosen_pos == default_pos)) {
+    if (!(hovered_pos == default_pos || chosen_pos == default_pos)) {
         swap_cell(this->board_game[hovered_pos.y][hovered_pos.x], this->board_game[chosen_pos.y][chosen_pos.x]);
         this->turn = -this->turn;
         return 1;
