@@ -24,6 +24,8 @@ class cell {
         XY get_pos(void) { return this->pos; }
         Rectangle get_rect(void) { return this->rec; }
         int get_len(void) { return this->length; }
+        bool is_exist_piece(void) { return this->Piece.get_is_exist(); }
+        bool is_moved_piece(void) { return this->Piece.get_was_moved(); }
         bool get_hover(void) { return this->is_hover; }
         bool get_chosen(void) { return this->is_chosen; }
         
@@ -32,9 +34,6 @@ class cell {
         void unhover(void);
         void choose(int8_t, Vector2);
         void unchoose(void);
-
-        bool is_exist_piece(void) { return this->get_type_piece()?1:0; }
-        bool is_moved_piece(void) { return this->Piece.get_was_moved(); }
 };
 
 // Class bàn cờ
