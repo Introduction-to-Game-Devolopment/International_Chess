@@ -18,6 +18,12 @@ XY& operator+=(XY& u, const XY& v) {
     return u;
 }
 
+XY& operator-=(XY& u, const XY& v) {
+    u.x -= v.x;
+    u.y -= v.y;
+    return u;
+}
+
 XY operator*(const XY& u, const int& d) {
     return {u.y * d, u.x * d};
 }

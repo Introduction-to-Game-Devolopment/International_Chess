@@ -29,6 +29,8 @@ typedef struct {
 bool operator==(const Vector2&, const Vector2&);
 bool operator==(const XY&, const XY&);
 XY operator+(const XY&, const XY&);
+XY operator-(const XY&, const XY&);
+
 XY& operator+=(XY&, const XY&);
 
 XY operator*(const XY&, const int&);

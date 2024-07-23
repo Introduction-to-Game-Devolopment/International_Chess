@@ -33,7 +33,7 @@ class cell {
         void choose(int8_t, Vector2);
         void unchoose(void);
 
-        bool is_exist_piece(void) { return this->Piece.get_is_exist(); }
+        bool is_exist_piece(void) { return this->get_type_piece()?1:0; }
         bool is_moved_piece(void) { return this->Piece.get_was_moved(); }
 };
 
