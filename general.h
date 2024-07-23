@@ -49,6 +49,7 @@ const Color     ODD_CELL_COLOR = { 211, 176, 131, 255 };
 const Color    EVEN_CELL_COLOR = { 217, 217, 217, 255 };
 const Color  CHOSEN_CELL_COLOR = { 165, 111, 111, 255 };
 const Color HOVERED_CELL_COLOR = { 165, 111, 111, 125 };
+const Color       BORDER_COLOR = {   0,   0,   0, 255 };
 
 const size FRAME_SIZE = { 1650, 980 };
 const int PADDING = 40;
@@ -56,9 +57,9 @@ const int PADDING = 40;
 const XY   PAWN_MOVE[] = { {1, -1}, {1,  0}, { 1, 1}, {-1,  1}, {-1, 0}, {-1, -1}                     };
 const XY BISHOP_MOVE[] = { {1, -1}, {1,  1}, {-1, 1}, {-1, -1}                                        };
 const XY KNIGHT_MOVE[] = { {1, -2}, {2, -1}, { 2, 1}, { 1,  2}, {-1, 2}, {-2,  1}, {-2, -1}, {-1, -2} };
-const XY   ROOK_MOVE[] = { {0, -1}, {1,  0}, { 1, 0}, {-1,  0}                                        };
-const XY  QUEEN_MOVE[] = { {0, -1}, {1, -1}, { 0, 1}, { 1,  1}, { 0, 1}, {-1,  1}, {-1,  0}, {-1, -1} };
-const XY   KING_MOVE[] = { {0, -1}, {1, -1}, { 0, 1}, { 1,  1}, { 0, 1}, {-1,  1}, {-1,  0}, {-1, -1} };
+const XY   ROOK_MOVE[] = { {0, -1}, {1,  0}, { 0, 1}, {-1,  0}                                        };
+const XY  QUEEN_MOVE[] = { {0, -1}, {1, -1}, { 0, 1}, { 1,  1}, { 1, 0}, {-1,  1}, {-1,  0}, {-1, -1} };
+const XY   KING_MOVE[] = { {0, -1}, {1, -1}, { 0, 1}, { 1,  1}, { 1, 0}, {-1,  1}, {-1,  0}, {-1, -1} };
 
 extern Texture2D BLACK_PAWN;
 extern Texture2D BLACK_BISHOP;
@@ -82,6 +83,7 @@ const Vector2 ORIGIN = { 0.0f, 0.0f };
 void draw_picture(const char*, Rectangle, float rotation=0.0f, Vector2 origin=ORIGIN, Color color=ORANGE);
 void draw_picture(Texture2D, Rectangle, float rotation=0.0f, Vector2 origin=ORIGIN, Color color=WHITE);
 void draw_rectangle_with_border(Rectangle, Color, int, Color, int border_radius=0);
+void draw_rectangle_with_rounded(Rectangle, Color, border, int, Color);
 bool is_inside(XY);
 bool is_promotion(XY);
 #endif

@@ -1,6 +1,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include "general.h"
 #include "piece.h"
 #include "player.h"
 #include <cstdint>
@@ -26,7 +27,7 @@ class cell {
         bool get_hover(void) { return this->is_hover; }
         bool get_chosen(void) { return this->is_chosen; }
         
-        void draw_cell();
+        void draw_cell(border radius={0,0,0,0}, int border_width=2, Color border_color=BORDER_COLOR);
         void hover();
         void unhover();
         void choose(int8_t, Vector2);

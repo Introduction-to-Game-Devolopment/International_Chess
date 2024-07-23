@@ -22,7 +22,7 @@ cell::cell(XY pos, int16_t type, size frame_size=FRAME_SIZE, int padding) {
     this->is_chosen = false;
 }
 
-void cell::draw_cell() {
+void cell::draw_cell(border radius, int border_width, Color border_color) {
     Color color;
     if (this->is_chosen)
         color = CHOSEN_CELL_COLOR;
@@ -31,7 +31,7 @@ void cell::draw_cell() {
     else if ((this->pos.x + this->pos.y) & 1) {
         color = ODD_CELL_COLOR;
     } else color = EVEN_CELL_COLOR;
-    DrawRectangleRec(this->rec, color);
+    draw_rectangle_with_rounded(this->rec, color, radius, border_width, border_color);
     if (this->Piece.get_type() == 0 || this->Piece.get_is_exist() == 0) return;
     draw_picture(this->Piece.get_texture(), this->get_rect());
 }
@@ -105,15 +105,26 @@ board::board(std::string white_player, std::string black_player) {
 }
 
 void board::draw_board() {
-    for(int i = 0; i < 8; i++) {
+    for(int i = 1; i < 7; i++) {
         for(int j = 0; j < 8; j++) {
-            this->board_game[i][j].draw_cell();
+            this->board_game[i][j].draw_cell({0,0,0,0}, 2);
         }
     }
+    for(int j = 1; j < 7; j++) {
+        this->board_game[0][j].draw_cell({0,0,0,0}, 2);
+    }
+    for(int j = 1; j < 7; j++) {
+        this->board_game[7][j].draw_cell({0,0,0,0}, 2);
+    }
+    this->board_game[0][0].draw_cell({10,0,0,0}, 2);
+    this->board_game[0][7].draw_cell({0,10,0,0}, 2);
+    this->board_game[7][7].draw_cell({0,0,10,0}, 2);
+    this->board_game[7][0].draw_cell({0,0,0,10}, 2);
+    draw_rectangle_with_rounded({PADDING, PADDING, float(this->board_game[0][0].get_len()*8), float(this->board_game[0][0].get_len()*8)}, {0,0,0,0}, {10,10,10,10}, 8, BORDER_COLOR);
 }
 
 bool board::is_blocked(XY pos) {
-    return this->board_game[pos.y][pos.x].is_exist_piece();
+    return this->board_game[pos.y][pos.x].get_type_piece();
 }
 
 bool board::is_captured(XY pos) {
