@@ -128,7 +128,7 @@ bool board::is_in_check() {
         for (int y = 0; y < 8; ++y) {
             if (this->turn * this->board_game[x][y].get_type_piece() == 6) {
                 king_pos = {y, x};
-                printf("king at (%d %d)\n", king_pos.x, king_pos.y);
+                printf("king at (%d %d)\n", king_pos.y, king_pos.x);
             }
         }
     }
@@ -136,7 +136,7 @@ bool board::is_in_check() {
     XY piece_pos;
     for (int capture_dir : {pawn_dir - 1, pawn_dir + 1}) {
         piece_pos = king_pos + PAWN_MOVE[capture_dir];
-        if (is_inside(piece_pos) && this->turn * this->board_game[piece_pos.x][piece_pos.y].get_type_piece() == -1) {
+        if (is_inside(piece_pos) && this->turn * this->board_game[piece_pos.y][piece_pos.x].get_type_piece() == -1) {
             printf("pawn attack\n");
             return true;
         }
@@ -145,7 +145,7 @@ bool board::is_in_check() {
         piece_pos = king_pos;
         while (is_inside(piece_pos += BISHOP_MOVE[dir])) {
             if (is_blocked(piece_pos)) {
-                int16_t piece_type = this->turn * this->board_game[piece_pos.x][piece_pos.y].get_type_piece();
+                int16_t piece_type = this->turn * this->board_game[piece_pos.y][piece_pos.x].get_type_piece();
                 if (piece_type == -2 || piece_type == -5) {
                     printf("%s attack\n", piece_type == -2 ? "bishop" : "queen");
                     return true;
@@ -157,7 +157,7 @@ bool board::is_in_check() {
     }
     for (int dir = sizeof(KNIGHT_MOVE) / sizeof(KNIGHT_MOVE[0]) - 1; dir >= 0; --dir) {
         piece_pos = king_pos + KNIGHT_MOVE[dir];
-        if (is_inside(piece_pos) && this->turn * this->board_game[piece_pos.x][piece_pos.y].get_type_piece() == -3) {
+        if (is_inside(piece_pos) && this->turn * this->board_game[piece_pos.y][piece_pos.x].get_type_piece() == -3) {
             printf("knight attack\n");
             return true;
         }
@@ -166,7 +166,7 @@ bool board::is_in_check() {
         piece_pos = king_pos;
         while (is_inside(piece_pos += ROOK_MOVE[dir])) {
             if (is_blocked(piece_pos)) {
-                int16_t piece_type = this->turn * this->board_game[piece_pos.x][piece_pos.y].get_type_piece();
+                int16_t piece_type = this->turn * this->board_game[piece_pos.y][piece_pos.x].get_type_piece();
                 if (piece_type == -4 || piece_type == -5) {
                     printf("%s attack\n", piece_type == -4 ? "rook" : "queen");
                     return true;
@@ -175,13 +175,13 @@ bool board::is_in_check() {
                 break;
             }
             else {
-                printf("rook_dir/empty at (%d %d): type=%d\n", piece_pos.x, piece_pos.y, this->board_game[piece_pos.x][piece_pos.y].get_type_piece());
+                printf("rook_dir/empty at (%d %d): type=%d\n", piece_pos.x, piece_pos.y, this->board_game[piece_pos.y][piece_pos.x].get_type_piece());
             }
         }
     }
     for (int dir = sizeof(KING_MOVE) / sizeof(KING_MOVE[0]) - 1; dir >= 0; --dir) {
         piece_pos = king_pos + KING_MOVE[dir];
-        if (is_inside(piece_pos) && this->turn * this->board_game[piece_pos.x][piece_pos.y].get_type_piece() == -6) {
+        if (is_inside(piece_pos) && this->turn * this->board_game[piece_pos.y][piece_pos.x].get_type_piece() == -6) {
             printf("king attack\n");
             return true;
         }
@@ -192,32 +192,32 @@ bool board::is_in_check() {
 bool board::is_valid_move(XY pos, XY next_pos, int move_type) {
     bool is_valid = true;
     int16_t old_piece_type[2] = {
-        this->board_game[pos.x][pos.y].get_type_piece(),
-        this->board_game[next_pos.x][next_pos.y].get_type_piece(),
+        this->board_game[pos.y][pos.x].get_type_piece(),
+        this->board_game[next_pos.y][next_pos.x].get_type_piece(),
     };
-    this->board_game[pos.x][pos.y] = cell(pos, 0);
-    this->board_game[next_pos.x][next_pos.y] = cell(next_pos, old_piece_type[0]);
+    this->board_game[pos.y][pos.x] = cell(pos, 0);
+    this->board_game[next_pos.y][next_pos.x] = cell(next_pos, old_piece_type[0]);
     switch (move_type) {
         case 0:
             if (is_in_check()) is_valid = false;
             break;
         case 1:
-            this->board_game[this->en_passant.x][this->en_passant.y] = cell(this->en_passant, 0);
+            this->board_game[this->en_passant.y][this->en_passant.x] = cell(this->en_passant, 0);
             if (is_in_check()) is_valid = false;
-            this->board_game[this->en_passant.x][this->en_passant.y] = cell(this->en_passant, -old_piece_type[0]);
+            this->board_game[this->en_passant.y][this->en_passant.x] = cell(this->en_passant, -old_piece_type[0]);
             break;
         case 2:
             XY old_rook_pos = {next_pos.y == 2 ? 0 : 7, next_pos.x};
             XY new_rook_pos = {next_pos.y == 2 ? 3 : 5, next_pos.x};
-            this->board_game[old_rook_pos.x][old_rook_pos.y] = cell(old_rook_pos, 0);
-            this->board_game[new_rook_pos.x][new_rook_pos.y] = cell(new_rook_pos, this->turn*4);
+            this->board_game[old_rook_pos.y][old_rook_pos.x] = cell(old_rook_pos, 0);
+            this->board_game[new_rook_pos.y][new_rook_pos.x] = cell(new_rook_pos, this->turn*4);
             if (is_in_check()) is_valid = false;
-            this->board_game[old_rook_pos.x][old_rook_pos.y] = cell(old_rook_pos, this->turn*4);
-            this->board_game[new_rook_pos.x][new_rook_pos.y] = cell(new_rook_pos, 0);
+            this->board_game[old_rook_pos.y][old_rook_pos.x] = cell(old_rook_pos, this->turn*4);
+            this->board_game[new_rook_pos.y][new_rook_pos.x] = cell(new_rook_pos, 0);
             break;
     }
-    this->board_game[pos.x][pos.y] = cell(pos, old_piece_type[0]);
-    this->board_game[next_pos.x][next_pos.y] = cell(next_pos, old_piece_type[1]);
+    this->board_game[pos.y][pos.x] = cell(pos, old_piece_type[0]);
+    this->board_game[next_pos.y][next_pos.x] = cell(next_pos, old_piece_type[1]);
     return is_valid;
 }
 
@@ -330,14 +330,14 @@ std::vector<XY> board::get_move(cell square) {
                     if (!is_blocked(next_pos += KING_MOVE[dir]) && !is_blocked(next_pos += KING_MOVE[dir])) {
                         for (XY rook_pos = next_pos + KING_MOVE[dir]; is_inside(rook_pos); rook_pos += KING_MOVE[dir]) {
                             if (is_blocked(rook_pos)) {
-                                printf("rook %d %d %d %d\n", rook_pos.x, rook_pos.y, this->board_game[rook_pos.x][rook_pos.y].get_type_piece(), this->turn);
-                                if (!this->board_game[rook_pos.x][rook_pos.y].is_moved_piece() && this->board_game[rook_pos.x][rook_pos.y].get_type_piece() * this->turn == 4) {
+                                printf("rook %d %d %d %d\n", rook_pos.y, rook_pos.x, this->board_game[rook_pos.y][rook_pos.x].get_type_piece(), this->turn);
+                                if (!this->board_game[rook_pos.y][rook_pos.x].is_moved_piece() && this->board_game[rook_pos.y][rook_pos.x].get_type_piece() * this->turn == 4) {
                                     next_move.emplace_back(next_pos);
                                 }
                                 break;
                             }
                             else {
-                                printf("empty %d %d\n", rook_pos.x, rook_pos.y);
+                                printf("empty %d %d\n", rook_pos.y, rook_pos.x);
                             }
                         }
                     }

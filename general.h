@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <vector>
 #include <string>
-#include "raylib.h"
+#include "../raylib/src/raylib.h"
 
 typedef struct {
     int x;
