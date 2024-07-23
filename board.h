@@ -1,7 +1,10 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include "piece.h"
 #include "player.h"
+#include <cstdint>
+#include <vector>
 
 // Class đại diện cho ô 
 class cell {        
@@ -15,6 +18,8 @@ class cell {
     public:
         cell(): pos({0,0}), rec({0,0,0,0}), is_chosen(0), is_hover(0), length(0) {}
         cell(XY, int16_t, size frame_size, int padding=PADDING);
+        void change_piece(piece);
+        piece get_piece() {return this->Piece; }
         int16_t get_type_piece(void) { return this->Piece.get_type(); }
         XY get_pos(void) { return this->pos; }
         Rectangle get_rect(void) { return this->rec; }
@@ -23,11 +28,10 @@ class cell {
         bool get_chosen(void) { return this->is_chosen; }
         
         void draw_cell();
-        void hover(piece);
-        void unhover();
-        void choose(int8_t);
-        void unchoose();
-        // void change_piece(int16_t);
+        void hover(void);
+        void unhover(void);
+        void choose(int8_t, Vector2);
+        void unchoose(void);
 
         bool is_exist_piece(void) { return this->Piece.get_is_exist(); }
         bool is_moved_piece(void) { return this->Piece.get_was_moved(); }
@@ -41,20 +45,23 @@ class board {
         cell board_game[8][8];
         int8_t turn;
         XY en_passant;
-        //std::vector<XY> check_piece;
+        XY white_king;
+        XY black_king;
     public:
         board(std::string, std::string);
         board(): board("Anonymous", "Anonymous") {};
-        void draw_board();
-        bool is_valid_move();
+        void draw_board(void);
         int8_t is_end_match();
-        void make_move();
+        void wait_for_event(Vector2);
+        void swap_cell(cell&, cell&);
+        bool make_move(Vector2);
 
-        bool is_inside(XY);
         bool is_blocked(XY);
         bool is_captured(XY);
         bool is_en_passant(XY);
         bool is_promotion(XY);
+        bool is_in_check();
+        bool is_valid_move(XY, XY, int);
         std::vector<XY> get_move(cell);
         // ...
 };

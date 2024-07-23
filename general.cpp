@@ -4,22 +4,34 @@ bool operator==(const Vector2& lv, const Vector2& rv) {
     return (lv.x == rv.x) && (lv.y == rv.y);
 }
 
-bool operator==(const XY& p, const XY& q) {
-    return p.x == q.x && p.y == q.y;
+bool operator==(const XY& u, const XY& v) {
+    return u.y == v.y && u.x == v.x;
 }
 
 XY operator+(const XY& u, const XY& v) {
-    return {u.x + v.x, u.y + v.y};
+    return { u.y + v.y, u.x + v.x};
 }
 
 XY& operator+=(XY& u, const XY& v) {
-    u.x += v.x;
     u.y += v.y;
+    u.x += v.x;
     return u;
 }
 
 XY operator*(const XY& u, const int& d) {
-    return {u.x * d, u.y * d};
+    return {u.y * d, u.x * d};
+}
+
+bool operator<(Vector2 point, Rectangle rec) {
+    if (point.x < (rec.x + rec.width) && point.x > rec.x && point.y < (rec.y + rec.height) && point.y > rec.y) return 1;
+    return 0;
+}
+
+template <class T>
+void swap(T &a, T &b) {
+    T tmp = a;
+    a = b;
+    b = tmp;
 }
 
 void draw_picture(const char* file_path, Rectangle dest_rect, float rotation, Vector2 origin, Color color) {
@@ -80,4 +92,12 @@ void destroy_piece_texture(void) {
     UnloadTexture(WHITE_ROOK);
     UnloadTexture(WHITE_QUEEN);
     UnloadTexture(WHITE_KING);
+}
+
+bool is_inside(XY pos) {
+    return 0 <= pos.x && pos.x < 8 && 0 <= pos.y && pos.y < 8;
+}
+
+bool is_promotion(XY pos) {
+    return pos.y == 0 || pos.y == 7;
 }
