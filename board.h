@@ -45,8 +45,6 @@ class board {
         cell board_game[8][8];
         int8_t turn;
         XY en_passant;
-        XY white_king;
-        XY black_king;
     public:
         board(std::string, std::string);
         board(): board("Anonymous", "Anonymous") {};

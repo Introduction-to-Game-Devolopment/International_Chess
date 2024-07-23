@@ -100,8 +100,6 @@ board::board(std::string white_player, std::string black_player) {
     this->board_game[7][4] = cell({7,4}, 6);
 
     this->en_passant = {-1, -1};
-    this->black_king = {0, 4};
-    this->white_king = {7, 4};
 }
 
 void board::draw_board() {
@@ -126,16 +124,16 @@ bool board::is_en_passant(XY pos) {
 
 bool board::is_in_check() {
     XY king_pos;
-    int pawn_dir;
+    for (int x = 0; x < 8; ++x) {
+        for (int y = 0; y < 8; ++y) {
+            if (this->turn * this->board_game[x][y].get_type_piece() == 1) {
+                king_pos = {y, x};
+                break;
+            }
+        }
+    }
+    int pawn_dir = this->turn > 0 ? 1 : 4;
     XY piece_pos;
-    if (this->turn > 0) {
-        king_pos = this->white_king;
-        pawn_dir = 1;
-    }
-    else {
-        king_pos = this->black_king;
-        pawn_dir = 4;
-    }
     for (int capture_dir : {pawn_dir - 1, pawn_dir + 1}) {
         piece_pos = king_pos + PAWN_MOVE[capture_dir];
         if (is_inside(piece_pos) && this->turn * this->board_game[piece_pos.x][piece_pos.y].get_type_piece() == -1) return true;
@@ -304,7 +302,7 @@ std::vector<XY> board::get_move(cell square) {
                     }
                 }
             }
-            if (!square.is_moved_piece()) {// && !is_in_check()
+            if (!square.is_moved_piece() && !is_in_check()) {
                 for (int dir : {0, 4}) {
                     bool blocked = true;
                     next_pos = pos;
