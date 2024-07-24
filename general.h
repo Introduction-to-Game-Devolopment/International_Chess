@@ -1,6 +1,7 @@
 #ifndef GENERAL_H
 #define GENERAL_H
 
+// These are libraries that using in this code
 #include <stdio.h>
 #include <cstdlib>
 #include <cstring>
@@ -10,48 +11,36 @@
 #include "../raylib/src/raylib.h"
 // #include "raylib.h"
 
-typedef struct {
-    int x;
-    int y;
-} point;
+// Define structs using in this code
+typedef struct { float x, y; } point;                                             // Represent a point in frame
+typedef struct { int y, x; } XY;                                                // Represen cell_pos in the board
+typedef struct { int width, height; } size;                                     // Represent a size of rectangle (or something else...)
+typedef struct { int top_left, top_right, bottom_right, bottom_left; } border;  // Represent four corner in a rectangle
 
-typedef struct {
-    int y;
-    int x;
-} XY;
-
-const XY DEFAULT_POS = {-1, -1};
-
-typedef struct {
-    int w;
-    int h;
-} size;
-
-typedef struct {
-    int top_left, top_right, bottom_right, bottom_left;
-} border;
-
+// Operator and check_function using in this code
 bool operator==(const Vector2&, const Vector2&);
 bool operator==(const XY&, const XY&);
 XY operator+(const XY&, const XY&);
 XY operator-(const XY&, const XY&);
-
-XY& operator+=(XY&, const XY&);
-
 XY operator*(const XY&, const int&);
-bool operator<(Vector2 point, Rectangle rec);
+XY& operator+=(XY&, const XY&);
+bool operator<(Vector2, Rectangle);       // Check if a point lies inside a rectangle
 
-template <class T>
-void swap(T &a, T &b);
+bool is_inside(XY);                             // Check if a cell position is within the bounds of a board 
+bool is_promotion(XY);                          // Check is a moving is promotion
 
+// Define const variables
+// For frame_window 
+const size FRAME_SIZE = { 1650, 980 };          
+const int     PADDING = 40;
+const int         FPS = 60;
+// For chessboard
+const XY DEFAULT_POS = {-1, -1};
 const Color     ODD_CELL_COLOR = { 211, 176, 131, 255 };
 const Color    EVEN_CELL_COLOR = { 217, 217, 217, 255 };
 const Color  CHOSEN_CELL_COLOR = { 165, 111, 111, 255 };
 const Color HOVERED_CELL_COLOR = { 165, 111, 111, 125 };
-const Color        BORDER_COLOR = {   0,   0,   0, 255 };
-
-const size FRAME_SIZE = { 1650, 980 };
-const int PADDING = 40;
+const Color       BORDER_COLOR = {   0,   0,   0, 255 };
 
 const XY   PAWN_MOVE[] = { {1, -1}, {1,  0}, { 1, 1}, {-1,  1}, {-1, 0}, {-1, -1}                     };
 const XY BISHOP_MOVE[] = { {1, -1}, {1,  1}, {-1, 1}, {-1, -1}                                        };
@@ -77,14 +66,12 @@ extern Texture2D WHITE_KING;
 void init_piece_texture(void);
 void destroy_piece_texture(void);
 
+// GUI 
 const Vector2 ORIGIN = { 0.0f, 0.0f };
 
-void draw_picture(const char* file_path, Rectangle dest_rect, float rotation=0.0f, Vector2 origin=ORIGIN, Color color=ORANGE);
-void draw_picture(Texture2D texture, Rectangle dest_rect, float rotation=0.0f, Vector2 origin=ORIGIN, Color color=WHITE);
+void draw_picture(const char*, Rectangle, float rotation=0.0f, Vector2 origin=ORIGIN, Color color=ORANGE);
+void draw_picture(Texture2D, Rectangle, float rotation=0.0f, Vector2 origin=ORIGIN, Color color=WHITE);
 void draw_rectangle_with_border(Rectangle, Color, int, Color, int border_radius=0);
 void draw_rectangle_with_rounded(Rectangle, Color, border, int, Color);
-
-bool is_inside(XY pos);
-bool is_promotion(XY pos);
 
 #endif

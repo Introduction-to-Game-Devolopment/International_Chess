@@ -5,11 +5,11 @@
 
 int main(void)
 {   
-    InitWindow(FRAME_SIZE.w, FRAME_SIZE.h, "raylib [core] example - basic window");
+    InitWindow(FRAME_SIZE.width, FRAME_SIZE.height, "3AESN - CHESS");
     init_piece_texture();
 
-    SetTargetFPS(60);
-    board Board = board();
+    SetTargetFPS(FPS);
+    boardchess Board = boardchess();
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(RAYWHITE);
@@ -20,6 +20,10 @@ int main(void)
             Vector2 mouse_pos = GetMousePosition();
             bool flag = Board.make_move(mouse_pos);
             if (!flag) Board.wait_for_event(mouse_pos);
+            if (int8_t result = Board.is_end_match()) {
+                Board.end_match(result);
+                // break;
+            }
             printf("Mouse left button pressed at [%f, %f]\n", mouse_pos.x, mouse_pos.y);
         }
 
