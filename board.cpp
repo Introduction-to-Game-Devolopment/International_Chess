@@ -57,9 +57,9 @@ boardchess::boardchess(const std::string white_player, const std::string black_p
     this->black_player = player(black_player, -1);
     this->turn = 1;
     this->en_passant = DEFAULT_POS;
-    
+
     // Nonexistance
-    for (int i = 1; i < 7; i++) {
+    for (int i = 2; i < 6; i++) {
         for (int j = 0; j < 8; j++) {
             this->board[i][j] = cell({i, j}, 0);
         }
@@ -147,7 +147,7 @@ bool boardchess::is_in_check() {
         for (int x = 0; x < 8; ++x) {
             if (this->turn * this->board[y][x].get_type_piece() == 6) {
                 king_pos = {y, x};
-                printf("is_in_check: king at (%d %d)\n", king_pos.y, king_pos.x);   // for debuging
+                // printf("is_in_check: king at (%d %d)\n", king_pos.y, king_pos.x);   // for debuging
             }
         }
     }
@@ -156,7 +156,7 @@ bool boardchess::is_in_check() {
     for (int capture_dir : {pawn_dir - 1, pawn_dir + 1}) {
         piece_pos = king_pos + PAWN_MOVE[capture_dir];
         if (is_inside(piece_pos) && is_blocked(piece_pos) && this->turn * this->board[piece_pos.y][piece_pos.x].get_type_piece() == -1) {
-            printf("is_in_check: pawn at (%d, %d) attack\n", piece_pos.y, piece_pos.x);   // for debuging
+            // printf("is_in_check: pawn at (%d, %d) attack\n", piece_pos.y, piece_pos.x);   // for debuging
             return true;
         }
     }
@@ -166,10 +166,10 @@ bool boardchess::is_in_check() {
             if (is_blocked(piece_pos)) {
                 int16_t piece_type = this->turn * this->board[piece_pos.y][piece_pos.x].get_type_piece();
                 if (piece_type == -2 || piece_type == -5) {
-                    printf("is_in_check: %s at (%d, %d) attack\n", piece_type == -2 ? "bishop" : "queen", piece_pos.y, piece_pos.x); //for debuging
+                    // printf("is_in_check: %s at (%d, %d) attack\n", piece_type == -2 ? "bishop" : "queen", piece_pos.y, piece_pos.x); //for debuging
                     return true;
                 }
-                printf("is_in_check: bishop_dir/piece at (%d %d): type=%d - %d\n", piece_pos.x, piece_pos.y, piece_type, is_blocked(piece_pos)); //for debuging
+                // printf("is_in_check: bishop_dir/piece at (%d %d): type=%d - %d\n", piece_pos.x, piece_pos.y, piece_type, is_blocked(piece_pos)); //for debuging
                 break;
             }
         }
@@ -177,7 +177,7 @@ bool boardchess::is_in_check() {
     for (int dir = sizeof(KNIGHT_MOVE) / sizeof(KNIGHT_MOVE[0]) - 1; dir >= 0; --dir) {
         piece_pos = king_pos + KNIGHT_MOVE[dir];
         if (is_inside(piece_pos) && is_blocked(piece_pos) && this->turn * this->board[piece_pos.y][piece_pos.x].get_type_piece() == -3) {
-            printf("is_in_check: knight at (%d - %d) attack: type=%d\n", piece_pos.y, piece_pos.x, this->board[piece_pos.y][piece_pos.x].get_type_piece()); // for debuging
+            // printf("is_in_check: knight at (%d - %d) attack: type=%d\n", piece_pos.y, piece_pos.x, this->board[piece_pos.y][piece_pos.x].get_type_piece()); // for debuging
             return true;
         }
     }
@@ -187,21 +187,21 @@ bool boardchess::is_in_check() {
             if (is_blocked(piece_pos)) {
                 int16_t piece_type = this->turn * this->board[piece_pos.y][piece_pos.x].get_type_piece();
                 if (piece_type == -4 || piece_type == -5) {
-                    printf("is_in_check: %s at (%d, %d) attack\n", piece_type == -4 ? "rook" : "queen", piece_pos.y, piece_pos.x);  // for debuging
+                    // printf("is_in_check: %s at (%d, %d) attack\n", piece_type == -4 ? "rook" : "queen", piece_pos.y, piece_pos.x);  // for debuging
                     return true;
                 }
-                printf("is_in_check: rook_dir/piece at (%d %d): type=%d\n", piece_pos.x, piece_pos.y, piece_type);   // for debuging 
+                // printf("is_in_check: rook_dir/piece at (%d %d): type=%d\n", piece_pos.x, piece_pos.y, piece_type);   // for debuging 
                 break;
             }
             else {
-                printf("is_in_check: rook_dir/empty at (%d %d): type=%d\n", piece_pos.x, piece_pos.y, this->board[piece_pos.y][piece_pos.x].get_type_piece());  //for debuging
+                // printf("is_in_check: rook_dir/empty at (%d %d): type=%d\n", piece_pos.x, piece_pos.y, this->board[piece_pos.y][piece_pos.x].get_type_piece());  //for debuging
             }
         }
     }
     for (int dir = sizeof(KING_MOVE) / sizeof(KING_MOVE[0]) - 1; dir >= 0; --dir) {
         piece_pos = king_pos + KING_MOVE[dir];
         if (is_inside(piece_pos) && is_blocked(piece_pos) && this->turn * this->board[piece_pos.y][piece_pos.x].get_type_piece() == -6) {
-            printf("is_in_check: king at (%d, %d) attack\n", piece_pos.y, piece_pos.x);
+            // printf("is_in_check: king at (%d, %d) attack\n", piece_pos.y, piece_pos.x);
             return true;
         }
     }
@@ -212,9 +212,9 @@ bool boardchess::is_valid_move(XY old_pos, XY new_pos, int16_t type) {
     // return true;
     bool is_valid = true;
     bool flag = swap_test(this->board[old_pos.y][old_pos.x], this->board[new_pos.y][new_pos.x]);
-    printf("is_valid_move: old_pos: type=%d, (%d - %d) || new_pos: type=%d, (%d - %d)\n", this->board[old_pos.y][old_pos.x].get_type_piece(), old_pos.y, old_pos.x, this->board[new_pos.y][new_pos.x].get_type_piece(), new_pos.y, new_pos.x); //for debuging
+    // printf("is_valid_move: old_pos: type=%d, (%d - %d) || new_pos: type=%d, (%d - %d)\n", this->board[old_pos.y][old_pos.x].get_type_piece(), old_pos.y, old_pos.x, this->board[new_pos.y][new_pos.x].get_type_piece(), new_pos.y, new_pos.x); //for debuging
     if (is_in_check()) is_valid = false;    
-    printf("is_valid_move: flag=%d, is_attacked=%d\n", flag, is_valid);   //for debuging
+    // printf("is_valid_move: flag=%d, is_attacked=%d\n", flag, is_valid);   //for debuging
     swap_test(this->board[old_pos.y][old_pos.x], this->board[new_pos.y][new_pos.x], flag);
     return is_valid;
 }
@@ -323,21 +323,21 @@ std::vector<XY> boardchess::get_move(cell square) {
                 }
             }
             if (!square.is_moved_piece() && !is_in_check()) {
-                printf("get_move - case 6: OK\n");  // for debuging 
+                // printf("get_move - case 6: OK\n");  // for debuging 
                 for (int dir : {0, 4}) {
                     next_pos = pos;
                     if (!is_blocked(next_pos += KING_MOVE[dir]) && !is_blocked(next_pos += KING_MOVE[dir])) {
                         for (XY rook_pos = next_pos + KING_MOVE[dir]; is_inside(rook_pos); rook_pos += KING_MOVE[dir]) {
                             if (is_blocked(rook_pos)) {
-                                printf("get_move - case 6: rook at (%d %d), type=%d, turn=%d\n", rook_pos.y, rook_pos.x, this->board[rook_pos.y][rook_pos.x].get_type_piece(), this->turn); // for debuging
+                                // printf("get_move - case 6: rook at (%d %d), type=%d, turn=%d\n", rook_pos.y, rook_pos.x, this->board[rook_pos.y][rook_pos.x].get_type_piece(), this->turn); // for debuging
                                 if (!this->board[rook_pos.y][rook_pos.x].is_moved_piece() && this->board[rook_pos.y][rook_pos.x].get_type_piece() * this->turn == 4) {
                                     next_move.emplace_back(std::make_pair(next_pos, 2));
                                 }
                                 break;
                             }
-                            else {
-                                printf("get_move - case 6: empty at (%d %d)\n", rook_pos.y, rook_pos.x);    // for debuging
-                            }
+                            // else {
+                                // printf("get_move - case 6: empty at (%d %d)\n", rook_pos.y, rook_pos.x);    // for debuging
+                            // }
                         }
                     }
                 }
@@ -350,7 +350,7 @@ std::vector<XY> boardchess::get_move(cell square) {
             valid_move.emplace_back(moves.first);
         }
     }
-    for (XY i : valid_move) printf("valid_move: (%d, %d)\n", i.y, i.x); // for debuging 
+    // for (XY i : valid_move) printf("valid_move: (%d, %d)\n", i.y, i.x); // for debuging 
     return valid_move;
 }
 
@@ -362,7 +362,7 @@ void boardchess::wait_for_event(Vector2 mouse_pos) {
             this->board[i][j].unhover();
             if (this->board[i][j].get_chosen()) {
                 next_move = get_move(this->board[i][j]);
-                if (next_move.empty()) printf("wait_for_event: chosen return %d at (%d, %d)" , int(this->board[i][j].get_chosen()), i, j); // for debuging
+                // if (next_move.empty()) printf("wait_for_event: chosen return %d at (%d, %d)" , int(this->board[i][j].get_chosen()), i, j); // for debuging
             }
         }
     }
@@ -384,7 +384,7 @@ bool boardchess::swap_cell(cell &my_cell, cell &your_cell) {
     my_cell.change_piece(your_cell.get_piece());
     your_cell.change_piece(tmp);
 
-    printf("swap_cell: capture successfully\n");    // for debuging
+    // printf("swap_cell: capture successfully\n");    // for debuging
     return false;
 }
 
@@ -401,13 +401,13 @@ bool boardchess::swap_test(cell &my_cell, cell &your_cell, bool undo) {
     }
     // case 1
     if (abs(my_cell.get_type_piece()) == 1 && abs(my_cell.get_pos().x - your_cell.get_pos().x) == abs(my_cell.get_pos().y - your_cell.get_pos().y) && your_cell.get_type_piece() == 0 && !undo) {
-        printf("swap_test - case 1: (%d, %d) - %d\n", en_passant.y, en_passant.x, this->board[this->en_passant.y][this->en_passant.x].is_exist_piece()); // for debuging
+        // printf("swap_test - case 1: (%d, %d) - %d\n", en_passant.y, en_passant.x, this->board[this->en_passant.y][this->en_passant.x].is_exist_piece()); // for debuging
         this->board[this->en_passant.y][this->en_passant.x].unexist();
         flag = true;
     } 
     // case 2
     if (abs(your_cell.get_type_piece()) == 1 && abs(my_cell.get_pos().x - your_cell.get_pos().x) == abs(my_cell.get_pos().y - your_cell.get_pos().y) && my_cell.get_type_piece() == 0 && undo) {
-        printf("swap_test - case 2: PASS\n");   // for debuging
+        // printf("swap_test - case 2: PASS\n");   // for debuging
         this->board[this->en_passant.y][this->en_passant.x].exist();
     }
     piece tmp = my_cell.get_piece();
@@ -434,12 +434,12 @@ bool boardchess::make_move(Vector2 mouse_pos) {
         }
     }
     
-    printf("make_move: hovered_pos: (%d - %d) | chosen_pos (%d - %d)\n", hovered_pos.y, hovered_pos.x, chosen_pos.y, chosen_pos.x); // for debuging
+    // printf("make_move: hovered_pos: (%d - %d) | chosen_pos (%d - %d)\n", hovered_pos.y, hovered_pos.x, chosen_pos.y, chosen_pos.x); // for debuging
     
     if (!(hovered_pos == DEFAULT_POS || chosen_pos == DEFAULT_POS)) {
         this->board[chosen_pos.y][chosen_pos.x].moved();
         if(abs(this->board[chosen_pos.y][chosen_pos.x].get_type_piece()) == 6) {
-            printf("make_move - castling: chosen_type=%d\n", this->board[chosen_pos.y][chosen_pos.x].get_type_piece()); //for debuging
+            // printf("make_move - castling: chosen_type=%d\n", this->board[chosen_pos.y][chosen_pos.x].get_type_piece()); //for debuging
             if (hovered_pos.x - chosen_pos.x == 2) {
                 swap_cell(this->board[chosen_pos.y][7], this->board[chosen_pos.y][5]);
             } else if (hovered_pos.x - chosen_pos.x == -2) {
@@ -470,29 +470,46 @@ bool boardchess::make_move(Vector2 mouse_pos) {
 }
 
 int8_t boardchess::is_end_match() {
-    int8_t flag = 2;
-    flag = is_in_check();
-    for(int i = 0; i < 8; i++) {
+    int8_t flag = is_in_check();
+    bool have_no_move = true;
+    int count_total_piece = 0;
+    bool have_bishop[] = {false, false};
+    bool bishop_color[] = {false, false};
+    int count_knight[] = {false, false};
+    for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
-            if(this->board[i][j].get_type_piece() * this->turn > 0) {
-                if(abs(this->board[i][j].get_type_piece())) {
+            if (this->board[i][j].is_exist_piece()) {
+                ++count_total_piece;
+                bool piece_color = this->board[i][j].get_type_piece() > 0;
+                if (piece_color ^ (this->turn < 0)) {
                     std::vector<XY>next_move = get_move(this->board[i][j]);
-                    if (!next_move.empty()) {
-                        flag = 2;
-                        return flag;
-                    }
+                    have_no_move &= next_move.empty();
+                    if (count_total_piece > 4 && !have_no_move) return 2;
+                }
+                switch (piece_color ? this->board[i][j].get_type_piece() : -this->board[i][j].get_type_piece()) {
+                    case 2:
+                        have_bishop[piece_color] = true;
+                        bishop_color[piece_color] = (i + j) & 1;
+                        break;
+                    case 3:
+                        ++count_knight[piece_color];
+                        break;
                 }
             }
         }
     }
-    printf("is_end_match: is_in_check=%d, flag=%d, turn=%d\n", is_in_check(), flag, this->turn);
+    if (count_total_piece == 2) return 0;
+    if (count_total_piece == 3 && (have_bishop[0] || have_bishop[1] || count_knight[0] || count_knight[1])) return 0;
+    if (count_total_piece == 4 && ((have_bishop[0] && have_bishop[1] && bishop_color[0] == bishop_color[1]) || count_knight[0] == 2 || count_knight[1] == 2 || (count_knight[0] && count_knight[1]))) return 0;
+    if (!have_no_move) return 2;
+    // printf("is_end_match: is_in_check=%d, flag=%d, turn=%d\n", is_in_check(), flag, this->turn);
     flag *= -this->turn;
     return flag;
 }
 
 void boardchess::end_match(int8_t turn) {
     printf("\n%d\n", turn);
-    if(turn) {
+    if (turn) {
         printf("PLAYER %s WIN", turn>0?this->white_player.get_name().c_str():this->black_player.get_name().c_str());
     } else {
         printf("DRAW\n");

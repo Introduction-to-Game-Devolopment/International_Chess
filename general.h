@@ -31,7 +31,7 @@ bool is_promotion(XY);                          // Check is a moving is promotio
 
 // Define const variables
 // For frame_window 
-const size FRAME_SIZE = { 1650, 980 };
+const size FRAME_SIZE = { 2000, 1500 }; //{ 1650, 980 };
 const int     PADDING = 40;
 const int         FPS = 60;
 // For chessboard
