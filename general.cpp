@@ -129,5 +129,5 @@ void draw_rectangle_with_rounded(Rectangle rect, Color rect_color, border radius
 
 void draw_rectangle_with_border(Rectangle rect, Color rect_color, int border_width, Color border_color, int border_radius) {
     DrawRectangleRounded(rect, 1.0*border_radius/100, 64, rect_color); 
-    DrawRectangleRoundedLinesEx(rect, 1.0*border_radius/100, 64, border_width, border_color); 
+    DrawRectangleRoundedLines(rect, 1.0*border_radius/100, 64, border_width, border_color); 
 }

@@ -8,8 +8,8 @@
 #include <cstdint>
 #include <vector>
 #include <string>
-#include "../raylib/src/raylib.h"
-// #include "raylib.h"
+//#include "../raylib/src/raylib.h"
+#include "raylib.h"
 
 // Define structs using in this code
 typedef struct { float x, y; } point;                                             // Represent a point in frame
@@ -31,7 +31,7 @@ bool is_promotion(XY);                          // Check is a moving is promotio
 
 // Define const variables
 // For frame_window 
-const size FRAME_SIZE = { 1650, 980 };          
+const size FRAME_SIZE = { 1650, 980 };
 const int     PADDING = 40;
 const int         FPS = 60;
 // For chessboard
