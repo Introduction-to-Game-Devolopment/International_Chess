@@ -27,6 +27,10 @@ typedef struct {
     int h;
 } size;
 
+typedef struct {
+    int top_left, top_right, bottom_right, bottom_left;
+} border;
+
 bool operator==(const Vector2&, const Vector2&);
 bool operator==(const XY&, const XY&);
 XY operator+(const XY&, const XY&);
@@ -44,6 +48,7 @@ const Color     ODD_CELL_COLOR = { 211, 176, 131, 255 };
 const Color    EVEN_CELL_COLOR = { 217, 217, 217, 255 };
 const Color  CHOSEN_CELL_COLOR = { 165, 111, 111, 255 };
 const Color HOVERED_CELL_COLOR = { 165, 111, 111, 125 };
+const Color        BORDER_COLOR = {   0,   0,   0, 255 };
 
 const size FRAME_SIZE = { 1650, 980 };
 const int PADDING = 40;
@@ -76,7 +81,8 @@ const Vector2 ORIGIN = { 0.0f, 0.0f };
 
 void draw_picture(const char* file_path, Rectangle dest_rect, float rotation=0.0f, Vector2 origin=ORIGIN, Color color=ORANGE);
 void draw_picture(Texture2D texture, Rectangle dest_rect, float rotation=0.0f, Vector2 origin=ORIGIN, Color color=WHITE);
-
+void draw_rectangle_with_border(Rectangle, Color, int, Color, int border_radius=0);
+void draw_rectangle_with_rounded(Rectangle, Color, border, int, Color);
 
 bool is_inside(XY pos);
 bool is_promotion(XY pos);
