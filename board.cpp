@@ -75,7 +75,6 @@ board::board(std::string white_player, std::string black_player) {
     // this->board_game[4][4] = cell({4,4}, 6);
     // this->board_game[2][1] = cell({2,1}, -1);
     
-    
     // Quân tốt
     for (int j = 0; j < 8; j++) {
         this->board_game[1][j] = cell({1,j}, -1);
