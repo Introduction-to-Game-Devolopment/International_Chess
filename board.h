@@ -59,7 +59,7 @@ class boardchess {
         bool    is_captured(XY);
         bool    is_en_passant(XY);
         bool    is_in_check(void);
-        bool    is_valid_move(XY, XY, int16_t);
+        bool    is_valid_move(XY, XY);
         
         void    draw_board(void);
         void    wait_for_event(Vector2);

@@ -208,7 +208,7 @@ bool boardchess::is_in_check() {
     return false;
 }
 
-bool boardchess::is_valid_move(XY old_pos, XY new_pos, int16_t type) {
+bool boardchess::is_valid_move(XY old_pos, XY new_pos) {
     // return true;
     bool is_valid = true;
     bool flag = swap_test(this->board[old_pos.y][old_pos.x], this->board[new_pos.y][new_pos.x]);
@@ -222,122 +222,116 @@ bool boardchess::is_valid_move(XY old_pos, XY new_pos, int16_t type) {
 std::vector<XY> boardchess::get_move(cell square) {
     if (!square.is_exist_piece()) return std::vector<XY>(0);
     
-    std::vector<std::pair<XY, int>> next_move(0);
+    std::vector<XY> next_move(0);
     XY pos = square.get_pos();
     XY next_pos;
-    int pawn_dir;
-    int piece_type = square.get_type_piece() * this->turn;
+    int8_t pawn_dir;
     
-    switch (piece_type) {
+    switch (square.get_type_piece() * this->turn) {
         case 1:
             pawn_dir = this->turn > 0 ? 4 : 1;
             next_pos = pos + PAWN_MOVE[pawn_dir];
             if (is_inside(next_pos) && !is_blocked(next_pos)) {
-                next_move.emplace_back(std::make_pair(next_pos, 0));
+                next_move.emplace_back(next_pos);
                 if (!square.is_moved_piece() && is_inside(next_pos += PAWN_MOVE[pawn_dir]) && !is_blocked(next_pos)) {
-                    next_move.emplace_back(std::make_pair(next_pos, 0));
+                    next_move.emplace_back(next_pos);
                 }
             }
-            for (int capture_dir : {pawn_dir - 1, pawn_dir + 1}) {
+            for (int8_t capture_dir : {pawn_dir - 1, pawn_dir + 1}) {
                 next_pos = pos + PAWN_MOVE[capture_dir];
                 if (is_inside(next_pos)) {
                     if (is_captured(next_pos)) {
-                        next_move.emplace_back(std::make_pair(next_pos, 0));
+                        next_move.emplace_back(next_pos);
                     }
                     if (is_en_passant(next_pos)) {
-                        next_move.emplace_back(std::make_pair(next_pos, 1));
+                        next_move.emplace_back(next_pos);
                     }
                 }
             }
             break;
         case 2:
-            for (int dir = sizeof(BISHOP_MOVE) / sizeof(BISHOP_MOVE[0]) - 1; dir >= 0; --dir) {
+            for (int8_t dir = sizeof(BISHOP_MOVE) / sizeof(BISHOP_MOVE[0]) - 1; dir >= 0; --dir) {
                 next_pos = pos;
                 while (is_inside(next_pos += BISHOP_MOVE[dir])) {
                     if (is_blocked(next_pos)) {
                         if (is_captured(next_pos)) {
-                            next_move.emplace_back(std::make_pair(next_pos, 0));
+                            next_move.emplace_back(next_pos);
                         }
                         break;
                     }
                     else {
-                        next_move.emplace_back(std::make_pair(next_pos, 0));
+                        next_move.emplace_back(next_pos);
                     }
                 }
             }
             break;
         case 3:
-            for (int dir = sizeof(KNIGHT_MOVE) / sizeof(KNIGHT_MOVE[0]) - 1; dir >= 0; --dir) {
+            for (int8_t dir = sizeof(KNIGHT_MOVE) / sizeof(KNIGHT_MOVE[0]) - 1; dir >= 0; --dir) {
                 next_pos = pos + KNIGHT_MOVE[dir];
                 if (is_inside(next_pos)) {
                     if (!is_blocked(next_pos) || is_captured(next_pos)) {
-                        next_move.emplace_back(std::make_pair(next_pos, 0));
+                        next_move.emplace_back(next_pos);
                     }
                 }
             }
             break;
         case 4: 
-            for (int dir = sizeof(ROOK_MOVE) / sizeof(ROOK_MOVE[0]) - 1; dir >= 0; --dir) {
+            for (int8_t dir = sizeof(ROOK_MOVE) / sizeof(ROOK_MOVE[0]) - 1; dir >= 0; --dir) {
                 next_pos = pos;
                 while (is_inside(next_pos += ROOK_MOVE[dir])) {
                     if (is_blocked(next_pos)) {
                             if (is_captured(next_pos)) {
-                                next_move.emplace_back(std::make_pair(next_pos, 0));
+                                next_move.emplace_back(next_pos);
                         }
                         break;
                     }
                     else {
-                        next_move.emplace_back(std::make_pair(next_pos, 0));
+                        next_move.emplace_back(next_pos);
                     }
                 }
             }
             break;
         case 5:
-            for (int dir = sizeof(QUEEN_MOVE) / sizeof(QUEEN_MOVE[0]) - 1; dir >= 0; --dir) {
+            for (int8_t dir = sizeof(QUEEN_MOVE) / sizeof(QUEEN_MOVE[0]) - 1; dir >= 0; --dir) {
                 next_pos = pos;
                 while (is_inside(next_pos += QUEEN_MOVE[dir])) {
                     if (is_blocked(next_pos)) {
                         if (is_captured(next_pos)) {
-                            next_move.emplace_back(std::make_pair(next_pos, 0));
+                            next_move.emplace_back(next_pos);
                         }
                         break;
                     }
                     else {
-                        next_move.emplace_back(std::make_pair(next_pos, 0));
+                        next_move.emplace_back(next_pos);
                     }
                 }
             }
             break;
         case 6:
-            for (int dir = sizeof(KING_MOVE) / sizeof(KING_MOVE[0]) - 1; dir >= 0; --dir)  {
+            for (int8_t dir = sizeof(KING_MOVE) / sizeof(KING_MOVE[0]) - 1; dir >= 0; --dir)  {
                 next_pos = pos + KING_MOVE[dir];
                 if (is_inside(next_pos)) {
                     if (is_blocked(next_pos)) {
                         if (is_captured(next_pos)) {
-                            next_move.emplace_back(std::make_pair(next_pos, 0));
+                            next_move.emplace_back(next_pos);
                         }
                     }
                     else {
-                        next_move.emplace_back(std::make_pair(next_pos, 0));
+                        next_move.emplace_back(next_pos);
                     }
                 }
             }
             if (!square.is_moved_piece() && !is_in_check()) {
-                // printf("get_move - case 6: OK\n");  // for debuging 
-                for (int dir : {0, 4}) {
+                for (int8_t dir : {0, 4}) {
                     next_pos = pos;
                     if (!is_blocked(next_pos += KING_MOVE[dir]) && !is_blocked(next_pos += KING_MOVE[dir])) {
                         for (XY rook_pos = next_pos + KING_MOVE[dir]; is_inside(rook_pos); rook_pos += KING_MOVE[dir]) {
                             if (is_blocked(rook_pos)) {
-                                // printf("get_move - case 6: rook at (%d %d), type=%d, turn=%d\n", rook_pos.y, rook_pos.x, this->board[rook_pos.y][rook_pos.x].get_type_piece(), this->turn); // for debuging
                                 if (!this->board[rook_pos.y][rook_pos.x].is_moved_piece() && this->board[rook_pos.y][rook_pos.x].get_type_piece() * this->turn == 4) {
-                                    next_move.emplace_back(std::make_pair(next_pos, 2));
+                                    next_move.emplace_back(next_pos);
                                 }
                                 break;
                             }
-                            // else {
-                                // printf("get_move - case 6: empty at (%d %d)\n", rook_pos.y, rook_pos.x);    // for debuging
-                            // }
                         }
                     }
                 }
@@ -345,19 +339,18 @@ std::vector<XY> boardchess::get_move(cell square) {
             break;
     }
     std::vector<XY> valid_move(0);
-    for (std::pair<XY, int> moves : next_move) {
-        if (is_valid_move(pos, moves.first, moves.second)) {
-            valid_move.emplace_back(moves.first);
+    for (int8_t i = next_move.size() - 1; i >= 0; --i) {
+        if (is_valid_move(pos, next_move[i])) {
+            valid_move.emplace_back(next_move[i]);
         }
     }
-    // for (XY i : valid_move) printf("valid_move: (%d, %d)\n", i.y, i.x); // for debuging 
     return valid_move;
 }
 
 void boardchess::wait_for_event(Vector2 mouse_pos) {
     std::vector<XY> next_move;
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
+    for (int8_t i = 0; i < 8; i++) {
+        for (int8_t j = 0; j < 8; j++) {
             this->board[i][j].choose(this->turn, mouse_pos);
             this->board[i][j].unhover();
             if (this->board[i][j].get_chosen()) {
@@ -419,8 +412,8 @@ bool boardchess::swap_test(cell &my_cell, cell &your_cell, bool undo) {
 
 bool boardchess::make_move(Vector2 mouse_pos) {
     XY hovered_pos = {-1, -1}, chosen_pos = {-1, -1};
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
+    for (int8_t i = 0; i < 8; i++) {
+        for (int8_t j = 0; j < 8; j++) {
             if (mouse_pos < this->board[i][j].get_rect()) {
                 if (this->board[i][j].get_hover()) {
                     hovered_pos = {i, j};
@@ -472,12 +465,12 @@ bool boardchess::make_move(Vector2 mouse_pos) {
 int8_t boardchess::is_end_match() {
     int8_t flag = is_in_check();
     bool have_no_move = true;
-    int count_total_piece = 0;
+    int8_t count_total_piece = 0;
     bool have_bishop[] = {false, false};
     bool bishop_color[] = {false, false};
-    int count_knight[] = {false, false};
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
+    int8_t count_knight[] = {false, false};
+    for (int8_t i = 0; i < 8; i++) {
+        for (int8_t j = 0; j < 8; j++) {
             if (this->board[i][j].is_exist_piece()) {
                 ++count_total_piece;
                 bool piece_color = this->board[i][j].get_type_piece() > 0;
