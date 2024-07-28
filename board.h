@@ -4,6 +4,7 @@
 #include "general.h"
 #include "piece.h"
 #include "player.h"
+#include "tool.h"
 
 // Represent a cell in boardchess 
 class cell {        
@@ -16,10 +17,10 @@ class cell {
         bool        is_hover;   // For make_move and get_move
     public:
         cell(): pos({0,0}), rec({0,0,0,0}), length(0) , is_chosen(0), is_hover(0){}
-        cell(XY, int16_t, size frame_size=FRAME_SIZE, int padding=PADDING);
+        cell(XY, int8_t, size frame_size=FRAME_SIZE, int padding=PADDING);
         
         piece       get_piece(void)         { return this->Piece; }
-        int16_t     get_type_piece(void)    { return this->Piece.get_type(); }
+        int8_t      get_type_piece(void)    { return this->Piece.get_type(); }
         XY          get_pos(void)           { return this->pos; }
         Rectangle   get_rect(void)          { return this->rec; }
         float       get_len(void)           { return this->length; }
@@ -49,9 +50,10 @@ class boardchess {
         cell    board[8][8];
         int8_t  turn;
         XY      en_passant;
-        
+        TextBox moving;
+        std::vector<move_in_chess> data;
     public:
-        boardchess(std::string, std::string);
+        boardchess(const std::string, const std::string);
         boardchess(): boardchess("Anonymous", "Anonymous") {}
         
         int8_t  is_end_match();
@@ -59,15 +61,17 @@ class boardchess {
         bool    is_captured(XY);
         bool    is_en_passant(XY);
         bool    is_in_check(void);
-        bool    is_valid_move(XY, XY, int16_t);
+        bool    is_valid_move(XY, XY, int8_t);
         
         void    draw_board(void);
         void    wait_for_event(Vector2);
-        bool    swap_cell(cell&, cell&);
+        bool    swap_cell(cell&, cell&, bool is_special=0);
         bool    swap_test(cell&, cell&, bool undo=false);
         bool    make_move(Vector2);
         void    end_match(int8_t);
         
+        void    save_move(XY src, XY dest, bool is_special_move=0);
+        void    save_data();
         std::vector<XY> get_move(cell);
         // ...
 };

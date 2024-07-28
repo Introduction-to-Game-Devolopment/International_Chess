@@ -56,7 +56,12 @@ Texture2D WHITE_ROOK;
 Texture2D WHITE_QUEEN;
 Texture2D WHITE_KING;
 
-void init_piece_texture(void) {
+Texture2D BACKGROUND;
+Image BACKGROUND_IMAGE;
+Font FONT;
+Font BOLD_FONT;
+
+void init_piece_texture(void) {  
     BLACK_PAWN = LoadTexture("asset/black_pawn.png");
     BLACK_BISHOP = LoadTexture("asset/black_bishop.png");
     BLACK_KNIGHT = LoadTexture("asset/black_knight.png");
@@ -73,6 +78,7 @@ void init_piece_texture(void) {
 }
 
 void destroy_piece_texture(void) {
+    UnloadTexture(BACKGROUND);
     UnloadTexture(BLACK_BISHOP);
     UnloadTexture(BLACK_PAWN);
     UnloadTexture(BLACK_KNIGHT);
@@ -88,6 +94,19 @@ void destroy_piece_texture(void) {
     UnloadTexture(WHITE_KING);
 }
 
+void init_resource(void) {
+    BACKGROUND_IMAGE = LoadImage("../asset/background.png");
+    BACKGROUND = LoadTextureFromImage(BACKGROUND_IMAGE);
+    BOLD_FONT = LoadFontEx("../asset/Arturo ExtraBoldItalic.ttf", 300, 0, 0);
+    FONT = LoadFontEx("../asset/Normal.ttf", 400, 0, 0);
+}
+
+void destroy_resource(void) {
+    UnloadImage(BACKGROUND_IMAGE);
+    UnloadTexture(BACKGROUND);
+    UnloadFont(FONT);
+    UnloadFont(BOLD_FONT);
+}
 
 void draw_picture(const char* file_path, Rectangle dest_rect, float rotation, Vector2 origin, Color color) {
     Texture2D texture = LoadTexture(file_path);
@@ -106,14 +125,14 @@ void draw_picture(Texture2D texture, Rectangle dest_rect, float rotation, Vector
 void draw_rectangle_with_rounded(Rectangle rect, Color rect_color, border radius, int border_width, Color border_color) {
     DrawRectangle(rect.x + radius.top_left , rect.y, rect.width - radius.top_left  - radius.top_right, radius.top_left , rect_color);
     DrawRectangle(rect.x, rect.y + radius.top_left , radius.bottom_left, rect.height - radius.top_left  - radius.bottom_left, rect_color);
-    DrawRectangle(rect.x + radius.bottom_left, rect.y + rect.height - radius.bottom_right, rect.width - radius.bottom_left - radius.bottom_right, radius.bottom_right, rect_color);
-    DrawRectangle(rect.x + rect.width - radius.top_right, rect.y + radius.top_right , radius.top_right, rect.height - radius.top_right - radius.bottom_right, rect_color);
+    DrawRectangle(rect.x + radius.bottom_left, rect.y + rect.height - radius.bottom_right - 1, rect.width - radius.bottom_left - radius.bottom_right, radius.bottom_right, rect_color);
+    DrawRectangle(rect.x + rect.width - radius.top_right - 1, rect.y + radius.top_right , radius.top_right, rect.height - radius.top_right - radius.bottom_right, rect_color);
     DrawRectangle(rect.x + radius.bottom_left, rect.y + radius.top_left , rect.width - radius.top_right - radius.bottom_left, rect.height - radius.bottom_right - radius.top_left , rect_color);
 
-    DrawCircleSector({rect.x + radius.top_left , rect.y + radius.top_left }, radius.top_left  - border_width, 180.0f, 270.0f, 64, rect_color);
-    DrawCircleSector({rect.x + rect.width - radius.top_right, rect.y + radius.top_right}, radius.top_right - border_width, 270.0f, 360.0f, 64, rect_color);
-    DrawCircleSector({rect.x + rect.width - radius.bottom_right, rect.y + rect.height - radius.bottom_right}, radius.bottom_right - border_width, 0.0f, 90.0f, 64, rect_color);
-    DrawCircleSector({rect.x + radius.bottom_left, rect.y + rect.height - radius.bottom_left}, radius.bottom_left - border_width, 90.0f, 180.0f, 64, rect_color);
+    DrawCircleSector({rect.x + radius.top_left , rect.y + radius.top_left }, radius.top_left - border_width, 180.0f, 270.0f, 64, rect_color);
+    DrawCircleSector({rect.x + rect.width - radius.bottom_right - 1, rect.y + rect.height - radius.bottom_right - 1}, radius.bottom_right - border_width, 0.0f, 90.0f, 64, rect_color);
+    DrawCircleSector({rect.x + rect.width - radius.top_right - 1, rect.y + radius.top_right}, radius.top_right - border_width, 270.0f, 360.0f, 64, rect_color);
+    DrawCircleSector({rect.x + radius.bottom_left, rect.y + rect.height - radius.bottom_left - 1}, radius.bottom_left - border_width, 90.0f, 180.0f, 64, rect_color);
     
     if (border_width == 0) return;
     DrawLineEx({rect.x + radius.top_left , rect.y + float(border_width)/2}, {rect.x + rect.width - radius.top_right, rect.y + float(border_width)/2}, border_width, border_color); 
@@ -122,12 +141,21 @@ void draw_rectangle_with_rounded(Rectangle rect, Color rect_color, border radius
     DrawLineEx({rect.x + rect.width - float(border_width)/2, rect.y + radius.top_right}, {rect.x + rect.width - float(border_width)/2, rect.y + rect.height - radius.bottom_right}, border_width, border_color); 
     
     DrawRing({rect.x + radius.top_left , rect.y + radius.top_left }, radius.top_left , radius.top_left  - border_width, 180.0f, 270.0f, 64, border_color);
-    DrawRing({rect.x + rect.width - radius.top_right, rect.y + radius.top_right}, radius.top_right, radius.top_right - border_width, 270.0f, 360.0f, 64, border_color);
-    DrawRing({rect.x + rect.width - radius.bottom_right, rect.y + rect.height - radius.bottom_right}, radius.bottom_right, radius.bottom_right - border_width, 0.0f, 90.0f, 64, border_color);
-    DrawRing({rect.x + radius.bottom_left, rect.y + rect.height - radius.bottom_left}, radius.bottom_left, radius.bottom_left - border_width, 90.0f, 180.0f, 64, border_color);
+    DrawRing({rect.x + rect.width - radius.top_right - 1, rect.y + radius.top_right}, radius.top_right, radius.top_right - border_width, 270.0f, 360.0f, 64, border_color);
+    DrawRing({rect.x + rect.width - radius.bottom_right - 1, rect.y + rect.height - radius.bottom_right - 1}, radius.bottom_right, radius.bottom_right - border_width, 0.0f, 90.0f, 64, border_color);
+    DrawRing({rect.x + radius.bottom_left, rect.y + rect.height - radius.bottom_left - 1}, radius.bottom_left, radius.bottom_left - border_width, 90.0f, 180.0f, 64, border_color);
 }
 
 void draw_rectangle_with_border(Rectangle rect, Color rect_color, int border_width, Color border_color, int border_radius) {
     DrawRectangleRounded(rect, 1.0*border_radius/100, 64, rect_color); 
     DrawRectangleRoundedLinesEx(rect, 1.0*border_radius/100, 64, border_width, border_color); 
+}
+
+Texture2D blur_texture_in_background(Rectangle rec, int blur, int radius, Image src) {
+    Image imcpy = ImageCopy(BACKGROUND_IMAGE);
+    ImageCrop(&imcpy, rec);
+    ImageBlurGaussianAndRounded(&imcpy, 15, 25);
+    Texture2D texture = LoadTextureFromImage(imcpy);
+    UnloadImage(imcpy);
+    return texture;
 }
