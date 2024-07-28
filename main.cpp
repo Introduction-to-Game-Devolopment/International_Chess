@@ -9,7 +9,7 @@ int main(void)
     init_piece_texture();
 
     SetTargetFPS(FPS);
-    boardchess Board = boardchess();
+    chessboard Board = chessboard();
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(RAYWHITE);

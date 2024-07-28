@@ -12,10 +12,11 @@
 #include "raylib.h"
 
 // Define structs using in this code
-typedef struct { float x, y; } point;                                             // Represent a point in frame
-typedef struct { int y, x; } XY;                                                // Represen cell_pos in the board
-typedef struct { int width, height; } size;                                     // Represent a size of rectangle (or something else...)
-typedef struct { int top_left, top_right, bottom_right, bottom_left; } border;  // Represent four corner in a rectangle
+typedef struct { float x, y; } point;                                                   // Represent a point in frame
+typedef struct { int y, x; } XY;                                                        // Represen cell_pos in the board
+typedef struct { int width, height; } size;                                             // Represent a size of rectangle (or something else...)
+typedef struct { int top_left, top_right, bottom_right, bottom_left; } border;          // Represent four corner in a rectangle
+typedef struct { XY src; int8_t type_src; XY dest; int8_t type_dest; } move_in_chess;   // Represent a move in game
 
 // Operator and check_function using in this code
 bool operator==(const Vector2&, const Vector2&);

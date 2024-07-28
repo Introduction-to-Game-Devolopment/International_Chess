@@ -4,7 +4,7 @@
 #include <vector>
 
 // Constructor for class cell
-cell::cell(XY pos, int16_t type, size frame_size, int padding) {
+cell::cell(XY pos, int8_t type, size frame_size, int padding) {
     this->Piece = init_piece(type);
     this->pos = pos;
     this->length = (frame_size.height - 2*padding)/8;
@@ -52,12 +52,13 @@ void cell::unchoose() {
     this->is_chosen = false;
 }
 
-boardchess::boardchess(const std::string white_player, const std::string black_player) {
+chessboard::chessboard(const std::string white_player, const std::string black_player) {
     this->white_player = player(white_player, 1);
     this->black_player = player(black_player, -1);
     this->turn = 1;
     this->en_passant = DEFAULT_POS;
     this->fifty_moves = 100;
+    data.clear();
 
     // Nonexistance
     for (int i = 2; i < 6; i++) {
@@ -110,7 +111,7 @@ boardchess::boardchess(const std::string white_player, const std::string black_p
     this->board[7][4] = cell({7,4}, 6);
 }
 
-void boardchess::draw_board() {
+void chessboard::draw_board() {
     for(int i = 1; i < 7; i++) {
         for(int j = 0; j < 8; j++) {
             this->board[i][j].draw_cell({0,0,0,0}, 2);
@@ -130,19 +131,19 @@ void boardchess::draw_board() {
     draw_rectangle_with_rounded({PADDING, PADDING, this->board[0][0].get_len()*8, this->board[0][0].get_len()*8}, {0,0,0,0}, {10,10,10,10}, 8, BORDER_COLOR);
 }
 
-bool boardchess::is_blocked(XY pos) {
+bool chessboard::is_blocked(XY pos) {
     return this->board[pos.y][pos.x].get_type_piece() != 0 && this->board[pos.y][pos.x].is_exist_piece();
 }
 
-bool boardchess::is_captured(XY pos) {
+bool chessboard::is_captured(XY pos) {
     return this->board[pos.y][pos.x].get_type_piece() * this->turn < 0;
 }
 
-bool boardchess::is_en_passant(XY pos) {
+bool chessboard::is_en_passant(XY pos) {
     return !this->board[pos.y][pos.x].is_exist_piece() && pos + PAWN_MOVE[this->turn > 0 ? 1 : 4] == this->en_passant;
 }
 
-bool boardchess::is_in_check() {
+bool chessboard::is_in_check() {
     XY king_pos;
     for (int y = 0; y < 8; ++y) {
         for (int x = 0; x < 8; ++x) {
@@ -209,7 +210,7 @@ bool boardchess::is_in_check() {
     return false;
 }
 
-bool boardchess::is_valid_move(XY old_pos, XY new_pos) {
+bool chessboard::is_valid_move(XY old_pos, XY new_pos) {
     // return true;
     bool is_valid = true;
     bool flag = swap_test(this->board[old_pos.y][old_pos.x], this->board[new_pos.y][new_pos.x]);
@@ -220,7 +221,7 @@ bool boardchess::is_valid_move(XY old_pos, XY new_pos) {
     return is_valid;
 }
 
-std::vector<XY> boardchess::get_move(cell square) {
+std::vector<XY> chessboard::get_move(cell square) {
     if (!square.is_exist_piece()) return std::vector<XY>(0);
     
     std::vector<XY> next_move(0);
@@ -348,7 +349,7 @@ std::vector<XY> boardchess::get_move(cell square) {
     return valid_move;
 }
 
-void boardchess::wait_for_event(Vector2 mouse_pos) {
+void chessboard::wait_for_event(Vector2 mouse_pos) {
     std::vector<XY> next_move;
     for (int8_t i = 0; i < 8; i++) {
         for (int8_t j = 0; j < 8; j++) {
@@ -367,11 +368,14 @@ void boardchess::wait_for_event(Vector2 mouse_pos) {
     }
 }
 
-bool boardchess::swap_cell(cell &my_cell, cell &your_cell) {
-    if (int(my_cell.get_type_piece())*your_cell.get_type_piece() < 0) {
+bool chessboard::swap_cell(cell &my_cell, cell &your_cell, bool is_special) {
+    save_move(my_cell.get_pos(), your_cell.get_pos(), is_special);
+    if (is_captured(your_cell.get_pos())) {
         your_cell.unexist();
         your_cell.change_piece(my_cell.get_piece());
         my_cell.change_piece(none());
+        player* this_player = this->turn > 0 ? &this->white_player : &this->black_player;
+        this_player->capture(your_cell.get_piece());
         return true;
     }
     piece tmp = my_cell.get_piece();
@@ -382,10 +386,14 @@ bool boardchess::swap_cell(cell &my_cell, cell &your_cell) {
     return false;
 }
 
-bool boardchess::swap_test(cell &my_cell, cell &your_cell, bool undo) {
+void chessboard::save_move(XY src, XY dest, bool is_special_move) {
+    this->data.push_back((move_in_chess){src, this->board[src.y][src.x].get_type_piece(), dest, this->board[dest.y][dest.x].get_type_piece()});
+}
+
+bool chessboard::swap_test(cell &my_cell, cell &your_cell, bool undo) {
     bool flag = false;
     
-    if (int(my_cell.get_type_piece())*your_cell.get_type_piece() < 0) {
+    if (my_cell.get_type_piece() * your_cell.get_type_piece() < 0) {
         if (!undo) {
             your_cell.unexist();
             flag = true;
@@ -411,7 +419,7 @@ bool boardchess::swap_test(cell &my_cell, cell &your_cell, bool undo) {
     return flag;
 }
 
-bool boardchess::make_move(Vector2 mouse_pos) {
+bool chessboard::make_move(Vector2 mouse_pos) {
     XY hovered_pos = {-1, -1}, chosen_pos = {-1, -1};
     for (int8_t i = 0; i < 8; i++) {
         for (int8_t j = 0; j < 8; j++) {
@@ -451,6 +459,7 @@ bool boardchess::make_move(Vector2 mouse_pos) {
                     is_end_match();
                     return 1;
                 }
+                ++this->fifty_moves;
                 if (is_promotion(hovered_pos)) {
                     this->board[chosen_pos.y][chosen_pos.x].change_piece(queen(1, this->turn));
                 }
@@ -473,7 +482,7 @@ bool boardchess::make_move(Vector2 mouse_pos) {
     return 0;
 }
 
-int8_t boardchess::is_end_match() {
+int8_t chessboard::is_end_match() {
     int8_t flag = is_in_check();
     bool have_no_move = true;
     int8_t count_total_piece = 0;
@@ -514,7 +523,7 @@ int8_t boardchess::is_end_match() {
     return flag;
 }
 
-void boardchess::end_match(int8_t turn) {
+void chessboard::end_match(int8_t turn) {
     printf("\n%d\n", turn);
     if (turn) {
         printf("PLAYER %s WIN", turn>0?this->white_player.get_name().c_str():this->black_player.get_name().c_str());
