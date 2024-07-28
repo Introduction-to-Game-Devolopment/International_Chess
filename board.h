@@ -49,7 +49,7 @@ class boardchess {
         cell    board[8][8];
         int8_t  turn;
         XY      en_passant;
-        
+        int8_t  fifty_moves;
     public:
         boardchess(std::string, std::string);
         boardchess(): boardchess("Anonymous", "Anonymous") {}

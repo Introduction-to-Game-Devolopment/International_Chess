@@ -57,6 +57,7 @@ boardchess::boardchess(const std::string white_player, const std::string black_p
     this->black_player = player(black_player, -1);
     this->turn = 1;
     this->en_passant = DEFAULT_POS;
+    this->fifty_moves = 100;
 
     // Nonexistance
     for (int i = 2; i < 6; i++) {
@@ -138,7 +139,7 @@ bool boardchess::is_captured(XY pos) {
 }
 
 bool boardchess::is_en_passant(XY pos) {
-    return this->board[pos.y][pos.x].get_type_piece() == 0 && pos + PAWN_MOVE[this->turn > 0 ? 1 : 4] == this->en_passant;
+    return !this->board[pos.y][pos.x].is_exist_piece() && pos + PAWN_MOVE[this->turn > 0 ? 1 : 4] == this->en_passant;
 }
 
 bool boardchess::is_in_check() {
@@ -339,9 +340,9 @@ std::vector<XY> boardchess::get_move(cell square) {
             break;
     }
     std::vector<XY> valid_move(0);
-    for (int8_t i = next_move.size() - 1; i >= 0; --i) {
-        if (is_valid_move(pos, next_move[i])) {
-            valid_move.emplace_back(next_move[i]);
+    for (XY next_pos : next_move) {
+        if (is_valid_move(pos, next_pos)) {
+            valid_move.emplace_back(next_pos);
         }
     }
     return valid_move;
@@ -430,30 +431,40 @@ bool boardchess::make_move(Vector2 mouse_pos) {
     // printf("make_move: hovered_pos: (%d - %d) | chosen_pos (%d - %d)\n", hovered_pos.y, hovered_pos.x, chosen_pos.y, chosen_pos.x); // for debuging
     
     if (!(hovered_pos == DEFAULT_POS || chosen_pos == DEFAULT_POS)) {
-        this->board[chosen_pos.y][chosen_pos.x].moved();
-        if(abs(this->board[chosen_pos.y][chosen_pos.x].get_type_piece()) == 6) {
-            // printf("make_move - castling: chosen_type=%d\n", this->board[chosen_pos.y][chosen_pos.x].get_type_piece()); //for debuging
-            if (hovered_pos.x - chosen_pos.x == 2) {
-                swap_cell(this->board[chosen_pos.y][7], this->board[chosen_pos.y][5]);
-            } else if (hovered_pos.x - chosen_pos.x == -2) {
-                swap_cell(this->board[chosen_pos.y][0], this->board[chosen_pos.y][3]);
-            }
+        if (is_captured(hovered_pos)) this->fifty_moves = 100;
+        else --this->fifty_moves;
+        switch (abs(this->board[chosen_pos.y][chosen_pos.x].get_type_piece())) {
+            case 1:
+                this->fifty_moves = 100;
+                if (is_en_passant(hovered_pos)) {
+                    swap_cell(this->board[chosen_pos.y][chosen_pos.x], this->board[this->en_passant.y][this->en_passant.x]);
+                    swap_cell(this->board[this->en_passant.y][this->en_passant.x], this->board[hovered_pos.y][hovered_pos.x]);
+                    this->turn = -this->turn;
+                    this->en_passant = DEFAULT_POS;
+                    is_end_match();
+                    return 1;
+                }
+                if (abs(chosen_pos.y - hovered_pos.y) == 2) {
+                    swap_cell(this->board[chosen_pos.y][chosen_pos.x], this->board[hovered_pos.y][hovered_pos.x]);
+                    this->turn = -this->turn;
+                    this->en_passant = hovered_pos;
+                    is_end_match();
+                    return 1;
+                }
+                if (is_promotion(hovered_pos)) {
+                    this->board[chosen_pos.y][chosen_pos.x].change_piece(queen(1, this->turn));
+                }
+                break;
+            case 6:
+                if (hovered_pos.x - chosen_pos.x == 2) {
+                    swap_cell(this->board[chosen_pos.y][7], this->board[chosen_pos.y][5]);
+                } else if (hovered_pos.x - chosen_pos.x == -2) {
+                    swap_cell(this->board[chosen_pos.y][0], this->board[chosen_pos.y][3]);
+                }
+                break;
         }
-        if (abs(this->board[chosen_pos.y][chosen_pos.x].get_type_piece()) == 1) {
-            if (abs(chosen_pos.y - hovered_pos.y) == 2) {
-                this->en_passant = hovered_pos;
-            } else if (is_en_passant(hovered_pos)) {
-                swap_cell(this->board[chosen_pos.y][chosen_pos.x], this->board[this->en_passant.y][this->en_passant.x]);
-                swap_cell(this->board[this->en_passant.y][this->en_passant.x], this->board[hovered_pos.y][hovered_pos.x]);
-                this->turn = -this->turn;
-                this->en_passant = DEFAULT_POS;
-                is_end_match();
-                return 1;
-            } else if (is_promotion(hovered_pos)) {
-                // PHONG CHỐT
-                this->board[chosen_pos.y][chosen_pos.x].change_piece(queen(1, this->turn));
-            }
-        }
+        this->en_passant = DEFAULT_POS;
+        this->board[hovered_pos.y][hovered_pos.x].moved();
         swap_cell(this->board[chosen_pos.y][chosen_pos.x], this->board[hovered_pos.y][hovered_pos.x]);
         this->turn = -this->turn;
         is_end_match();
@@ -477,7 +488,10 @@ int8_t boardchess::is_end_match() {
                 if (piece_color ^ (this->turn < 0)) {
                     std::vector<XY>next_move = get_move(this->board[i][j]);
                     have_no_move &= next_move.empty();
-                    if (count_total_piece > 4 && !have_no_move) return 2;
+                    if (!have_no_move) {
+                        if (this->fifty_moves == 0) return 0;
+                        if (count_total_piece > 4) return 2;
+                    }
                 }
                 switch (piece_color ? this->board[i][j].get_type_piece() : -this->board[i][j].get_type_piece()) {
                     case 2:
